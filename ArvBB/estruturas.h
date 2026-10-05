@@ -7,7 +7,7 @@
 #include<ctype.h>
 #include<time.h>
 
-typedef struct ArvBB ArBB;
+typedef struct ArvBB ArvBB;
 
 typedef struct{
     char nome[30];
