@@ -1,6 +1,12 @@
 #ifndef ARVORE_BINARIA_BUSCA
 #define ARVORE_BINARIA_BUSCA
 
+#define TIPO_ARTISTA         1
+#define TIPO_ALBUM           2
+#define TIPO_MUSICA          3
+#define TIPO_PLAYLIST        4
+#define TIPO_MUSICA_PLAYLIST 5
+
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
@@ -59,5 +65,8 @@ struct ArvBB{
     struct ArvBB *esq;
     struct ArvBB *dir;
 };
+
+ArvBB *criarNO(char *chave, int tipo, void *dado);
+int inserirArvBB(ArvBB **raiz, char *chave, int tipo, void *dado);
 
 #endif
