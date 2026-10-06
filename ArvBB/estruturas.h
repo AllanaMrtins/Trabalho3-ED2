@@ -67,6 +67,33 @@ struct ArvBB{
 };
 
 ArvBB *criarNO(char *chave, int tipo, void *dado);
+
 int inserirArvBB(ArvBB **raiz, char *chave, int tipo, void *dado);
+
+ArvBB *buscarArvBB(ArvBB *raiz, char *chave);
+
+int cadastrarArtista(ArvBB **raiz, Artista *artista);
+
+int cadastrarAlbum(ArvBB *raizArtistas, char *nomeArtista, Album *album);
+
+int cadastrarMusica(ArvBB *raizArtistas, char *nomeArtista, char *tituloAlbum, Musica *musica); 
+
+void mostrarArtistas(ArvBB *raiz);
+
+void exibirArtista(Artista artista);
+
+void exibirAlbum(Album album);
+
+void exibirMusica(Musica musica);
+
+void exibirAlbunsAno(ArvBB *raizAlbuns, int ano);
+
+void exibirMusicaEncontrada(ArvBB *raizMusicas, char *tituloMusica, Artista artista, Album album);
+
+void procurarMusicaAlbuns(ArvBB *raizAlbuns, char *tituloMusica, Artista artista);
+
+void procurarMusicaArtistas(ArvBB *raizArtistas, char *tituloMusica);
+
+void mostrarDadosMusica(ArvBB *raizArtistas,char *tituloMusica);
 
 #endif
