@@ -18,7 +18,7 @@ int main(void) {
     int ano;
     int minutos;
 
-    /* Dados iniciais: artistas */
+    
     strcpy(artista.nome, "Legiao Urbana");
     strcpy(artista.tipo, "Banda");
     strcpy(artista.estilo, "Rock nacional");
@@ -33,7 +33,7 @@ int main(void) {
     artista.albuns = NULL;
     cadastrarArtista(&artistas, &artista);
 
-    /* Dados iniciais: albuns */
+
     strcpy(album.titulo, "Dois");
     album.ano = 1986;
     album.qtdMusicas = 0;
