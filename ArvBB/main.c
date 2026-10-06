@@ -108,6 +108,8 @@ int main(void) {
         printf("7 - Cadastrar playlist\n");
         printf("8 - Adicionar musica a playlist\n");
         printf("9 - Mostrar playlists\n");
+        printf("10 - Mostrar dados de uma playlist\n");
+        printf("11 - Remover musica de uma playlist\n");
         printf("0 - Sair\n");
         printf("Escolha uma opcao: ");
 
@@ -315,6 +317,50 @@ int main(void) {
             mostrarPlaylists(playlists);
         }
 
+        else if (opcao == 10)
+        {
+            char nomePlaylist[100];
+
+            printf("\nNome da playlist: ");
+            fgets(nomePlaylist, 100, stdin);
+            nomePlaylist[strspn(nomePlaylist, "\n")] = '\0';
+
+            mostrarDadosPlaylist(playlists, nomePlaylist);
+        }
+
+        else if (opcao == 11) {
+            char nomePlaylist[100];
+
+            printf("\nNome da playlist: ");
+            fgets(nomePlaylist, 100, stdin);
+            nomePlaylist[strcspn(nomePlaylist, "\n")] = '\0';
+
+            printf("Nome do artista: ");
+            fgets(nomeArtista, 100, stdin);
+            nomeArtista[strcspn(nomeArtista, "\n")] = '\0';
+
+            printf("Titulo do album: ");
+            fgets(tituloAlbum, 100, stdin);
+            tituloAlbum[strcspn(tituloAlbum, "\n")] = '\0';
+
+            printf("Titulo da musica: ");
+            fgets(tituloMusica, 100, stdin);
+            tituloMusica[strcspn(tituloMusica, "\n")] = '\0';
+
+            resultado = removerMusicaPlaylist(
+                playlists,
+                nomePlaylist,
+                nomeArtista,
+                tituloAlbum,
+                tituloMusica
+            );
+
+            if (resultado)
+                printf("\nMusica removida da playlist!\n");
+            else
+                printf("\nPlaylist ou musica nao encontrada!\n");
+        }
+        
         else if (opcao != 0)
             printf("\nOpcao invalida!\n");
     }

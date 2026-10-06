@@ -78,6 +78,58 @@ ArvBB *buscarArvBB(ArvBB *raiz, char *chave){
     return resultado;
 }
 
+int removerArvBB(ArvBB **raiz, char *chave){
+    int resultado = 0, comparacao;
+    ArvBB *aux;
+    ArvBB *pai;
+
+    if (*raiz != NULL)
+    {
+        comparacao = strcmp(chave, (*raiz)->info.chave);
+        if (comparacao < 0)
+            resultado = removerArvBB(&(*raiz)->esq, chave);
+
+    }else if (comparacao > 0)
+        resultado = removerArvBB(&(*raiz)->dir, chave);
+
+    else if ((*raiz)->esq == NULL && (*raiz)->dir == NULL){
+        free(*raiz);
+        *raiz = NULL;
+        resultado = 1;
+
+    }else if ((*raiz)->esq == NULL){
+        aux = *raiz;
+        *raiz = (*raiz)->dir;
+        free(aux);
+        resultado = 1;
+
+    }else if ((*raiz)->dir == NULL){
+        aux = *raiz;
+        *raiz = (*raiz)->esq;
+        free(aux);
+        resultado = 1;
+
+    }else{
+        pai = *raiz;
+        aux = (*raiz)->dir;
+
+        while (aux->esq != NULL)
+        {
+            pai = aux;
+            aux = aux->esq;
+        }
+        (*raiz)->info = aux->info;
+        if (pai == *raiz)
+            pai->dir = aux->dir;
+        else
+            pai->esq = aux->dir;
+
+        free(aux);
+        resultado = 1;
+    }
+    return resultado;
+}
+
 int cadastrarArtista(ArvBB **raiz, Artista *artista){
     int resultado;
 
@@ -269,4 +321,36 @@ void mostrarPlaylists(ArvBB *raizPlaylists){
 
         mostrarPlaylists(raizPlaylists->dir);
     }
+}
+
+void mostrarDadosPlaylist(ArvBB *raizPlaylists, char *nomePlaylist){
+    ArvBB *playlistEncontrada;
+    playlistEncontrada = buscarArvBB(raizPlaylists, nomePlaylist);
+
+    if (playlistEncontrada != NULL)
+    {
+        printf("\n===== DADOS DA PLAYLIST ====\n");
+        printf("Nome: %s\n", playlistEncontrada->info.dado.playlist.nome);
+
+        if (playlistEncontrada->info.dado.playlist.musicas == NULL)
+            printf("Nenhuma musica cadastrada.\n");
+        else
+            mostrarMusicasPlaylist(playlistEncontrada->info.dado.playlist.musicas);
+    }else
+        printf("\nPlatlist nao encontrada.\n"); 
+}
+
+int removerMusicaPlaylist(ArvBB *raizPlaylists, char *nomePlaylist, char *nomeArtista, char *tituloAlbum, char *tituloMusica){
+    ArvBB *playlistEncontrada;
+    char chave[100];
+    int resultado = 0;
+
+    playlistEncontrada = buscarArvBB(raizPlaylists, nomePlaylist);
+
+    if (playlistEncontrada != NULL)
+    {
+        snprintf(chave, sizeof(chave), "%s - %s - %s", nomeArtista, tituloAlbum, tituloMusica);
+        resultado = removerArvBB(&playlistEncontrada->info.dado.playlist.musicas, chave);
+    }
+    return resultado;
 }

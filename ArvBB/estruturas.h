@@ -72,6 +72,8 @@ int inserirArvBB(ArvBB **raiz, char *chave, int tipo, void *dado);
 
 ArvBB *buscarArvBB(ArvBB *raiz, char *chave);
 
+int removerArvBB(ArvBB **raiz, char *chave);
+
 int cadastrarArtista(ArvBB **raiz, Artista *artista);
 
 int cadastrarAlbum(ArvBB *raizArtistas, char *nomeArtista, Album *album);
@@ -105,6 +107,10 @@ void exibirMusicaPlaylist(MusicaPlaylist musicaPlaylist);
 void mostrarMusicasPlaylist(ArvBB *raizMusicas);
 
 void mostrarPlaylists(ArvBB *raizPlaylists);
+
+void mostrarDadosPlaylist(ArvBB *raizPlaylists, char *nomePlaylist);
+
+int removerMusicaPlaylist(ArvBB *raizPlaylists, char *nomePlaylist, char *nomeArtista, char *tituloAlbum, char *tituloMusica);
 
 
 #endif
