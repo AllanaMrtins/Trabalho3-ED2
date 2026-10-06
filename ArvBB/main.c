@@ -1,16 +1,24 @@
 #include "estruturas.h"
 
-int main(void){
+int main(void) {
     ArvBB *artistas = NULL;
+    ArvBB *playlists = NULL;
     Artista artista;
     Album album;
     Musica musica;
+    Playlist playlist;
     ArvBB *artistaEncontrado;
     ArvBB *albumEncontrado;
+    char entrada[100];
+    char nomeArtista[100];
+    char tituloAlbum[100];
+    char tituloMusica[100];
+    int opcao = -1;
+    int resultado;
+    int ano;
+    int minutos;
 
-    char entrada[100], nomeArtista[100], tituloAlbum[100], tituloMusica[100];
-    int opcao = -1, resultado, ano, minutos;
-
+    /* Dados iniciais: artistas */
     strcpy(artista.nome, "Legiao Urbana");
     strcpy(artista.tipo, "Banda");
     strcpy(artista.estilo, "Rock nacional");
@@ -18,13 +26,21 @@ int main(void){
     artista.albuns = NULL;
     cadastrarArtista(&artistas, &artista);
 
+    strcpy(artista.nome, "Titas");
+    strcpy(artista.tipo, "Banda");
+    strcpy(artista.estilo, "Rock brasileiro");
+    artista.numeroAlbuns = 0;
+    artista.albuns = NULL;
+    cadastrarArtista(&artistas, &artista);
+
+    /* Dados iniciais: albuns */
     strcpy(album.titulo, "Dois");
     album.ano = 1986;
     album.qtdMusicas = 0;
     album.musicas = NULL;
     cadastrarAlbum(artistas, "Legiao Urbana", &album);
 
-    strcpy(album.titulo, "Que pis e Este");
+    strcpy(album.titulo, "Que Pais e Este");
     album.ano = 1987;
     album.qtdMusicas = 0;
     album.musicas = NULL;
@@ -36,19 +52,51 @@ int main(void){
     album.musicas = NULL;
     cadastrarAlbum(artistas, "Titas", &album);
 
-    strcpy(musica.titulo, "Tempo perdido");
+    /* Dados iniciais: musicas */
+    strcpy(musica.titulo, "Tempo Perdido");
     musica.minutos = 5;
-    cadastrarMusica(artistas, "Legiao Urbana", "Dois", &musica);
+    cadastrarMusica(
+        artistas,
+        "Legiao Urbana",
+        "Dois",
+        &musica
+    );
+
+    strcpy(musica.titulo, "Indios");
+    musica.minutos = 4;
+    cadastrarMusica(
+        artistas,
+        "Legiao Urbana",
+        "Dois",
+        &musica
+    );
 
     strcpy(musica.titulo, "Policia");
     musica.minutos = 3;
-    cadastrarMusica(artistas, "Titas", "Cabeca Dinossauro", &musica);
+    cadastrarMusica(
+        artistas,
+        "Titas",
+        "Cabeca Dinossauro",
+        &musica
+    );
+
+    strcpy(playlist.nome, "Favoritas");
+    playlist.musicas = NULL;
+    cadastrarPlaylist(&playlists, &playlist);
+
+    cadastrarMusicaPlaylist(
+        artistas,
+        playlists,
+        "Favoritas",
+        "Legiao Urbana",
+        "Dois",
+        "Tempo Perdido"
+    );
 
     printf("\nDados iniciais cadastrados com sucesso!\n");
 
-    while (opcao != 0)
-    {
-         printf("\n==============================\n");
+    while (opcao != 0) {
+        printf("\n==============================\n");
         printf("        MENU PRINCIPAL\n");
         printf("==============================\n");
         printf("1 - Cadastrar artista\n");
@@ -57,6 +105,9 @@ int main(void){
         printf("4 - Mostrar artistas\n");
         printf("5 - Mostrar albuns de um ano\n");
         printf("6 - Mostrar dados de uma musica\n");
+        printf("7 - Cadastrar playlist\n");
+        printf("8 - Adicionar musica a playlist\n");
+        printf("9 - Mostrar playlists\n");
         printf("0 - Sair\n");
         printf("Escolha uma opcao: ");
 
@@ -206,6 +257,62 @@ int main(void){
                 artistas,
                 tituloMusica
             );
+        }
+
+        else if (opcao == 7) {
+            printf("\nNome da playlist: ");
+            fgets(playlist.nome, 100, stdin);
+            playlist.nome[strcspn(playlist.nome, "\n")] = '\0';
+            playlist.musicas = NULL;
+
+            resultado = cadastrarPlaylist(
+                &playlists,
+                &playlist
+            );
+
+            if (resultado)
+                printf("\nPlaylist cadastrada com sucesso!\n");
+            else
+                printf("\nPlaylist ja cadastrada!\n");
+        }
+
+        else if (opcao == 8) {
+            char nomePlaylist[100];
+
+            printf("\nNome da playlist: ");
+            fgets(nomePlaylist, 100, stdin);
+            nomePlaylist[strcspn(nomePlaylist, "\n")] = '\0';
+
+            printf("Nome do artista: ");
+            fgets(nomeArtista, 100, stdin);
+            nomeArtista[strcspn(nomeArtista, "\n")] = '\0';
+
+            printf("Titulo do album: ");
+            fgets(tituloAlbum, 100, stdin);
+            tituloAlbum[strcspn(tituloAlbum, "\n")] = '\0';
+
+            printf("Titulo da musica: ");
+            fgets(tituloMusica, 100, stdin);
+            tituloMusica[strcspn(tituloMusica, "\n")] = '\0';
+
+            resultado = cadastrarMusicaPlaylist(
+                artistas,
+                playlists,
+                nomePlaylist,
+                nomeArtista,
+                tituloAlbum,
+                tituloMusica
+            );
+
+            if (resultado)
+                printf("\nMusica adicionada a playlist!\n");
+            else
+                printf("\nPlaylist, artista, album ou musica inexistente, ou musica repetida!\n");
+        }
+
+        else if (opcao == 9) {
+            printf("\n===== PLAYLISTS =====\n");
+            mostrarPlaylists(playlists);
         }
 
         else if (opcao != 0)

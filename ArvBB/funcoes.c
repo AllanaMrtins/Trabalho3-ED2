@@ -203,3 +203,70 @@ void procurarMusicaArtistas(ArvBB *raizArtistas, char *tituloMusica){
 void mostrarDadosMusica(ArvBB *raizArtistas,char *tituloMusica){
     procurarMusicaArtistas(raizArtistas, tituloMusica);
 }
+
+int cadastrarPlaylist(ArvBB **raizPlaylists, Playlist *playlist){
+    int resultado;
+
+    resultado = inserirArvBB(raizPlaylists, playlist->nome, TIPO_PLAYLIST, playlist);
+    return resultado;
+}
+
+int cadastrarMusicaPlaylist(ArvBB *raizArtistas, ArvBB *raizPlaylists, char *nomePlaylist, char *nomeArtista, char *tituloAlbum, char *tituloMusica){
+    ArvBB *playlistEncontrada;
+    ArvBB *artistaEncontrado;
+    ArvBB *albumEncontrado;
+    ArvBB *musicaEncontrada;
+    MusicaPlaylist musicaplaylsit;
+    char chave[100];
+    int resultado = 0;
+
+    playlistEncontrada = buscarArvBB(raizPlaylists, nomePlaylist);
+    artistaEncontrado = buscarArvBB(raizArtistas, nomeArtista);
+
+    if (albumEncontrado != NULL)
+    {
+        musicaEncontrada = buscarArvBB(albumEncontrado->info.dado.album.musicas, tituloMusica);
+
+        if (musicaEncontrada != NULL)
+        {
+            strcpy(musicaplaylsit.nomeArtista, nomeArtista);
+            strcpy(musicaplaylsit.tituloAlbum, tituloAlbum);
+            strcpy(musicaplaylsit.tituloMusica, tituloMusica);
+
+            snprintf(chave, sizeof(chave), "%s - %s - %s", nomeArtista, tituloAlbum, tituloMusica);
+            resultado = inserirArvBB(&playlistEncontrada->info.dado.playlist.musicas, chave, TIPO_MUSICA_PLAYLIST, &musicaplaylsit);
+        }
+        
+    }
+    return resultado;
+}
+
+void exibirMusicaPlaylist(MusicaPlaylist musicaPlaylist){
+    printf("\nArtista: %s", musicaPlaylist.nomeArtista);
+    printf("\nAlbum: %s", musicaPlaylist.tituloAlbum);
+    printf("\nMusica: %s\n", musicaPlaylist.tituloMusica);
+}
+
+void mostrarMusicasPlaylist(ArvBB *raizMusicas){
+    if (raizMusicas != NULL)
+    {
+        mostrarMusicasPlaylist(raizMusicas->esq);
+        exibirMusicaPlaylist(raizMusicas->info.dado.musicaplaylist);
+        mostrarMusicasPlaylist(raizMusicas->dir);
+    }
+}
+
+void mostrarPlaylists(ArvBB *raizPlaylists){
+    if (raizPlaylists != NULL)
+    {
+        mostrarPlaylists(raizPlaylists->esq);
+        printf("\nPlaylist: %s\n", raizPlaylists->info.dado.playlist.nome);
+
+        if (raizPlaylists->info.dado.playlist.musicas == NULL)
+            printf("Nenhuma musica cadastrada.\n");
+        else
+            mostrarMusicasPlaylist(raizPlaylists->info.dado.playlist.musicas);
+
+        mostrarPlaylists(raizPlaylists->dir);
+    }
+}

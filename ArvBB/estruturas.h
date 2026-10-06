@@ -96,4 +96,15 @@ void procurarMusicaArtistas(ArvBB *raizArtistas, char *tituloMusica);
 
 void mostrarDadosMusica(ArvBB *raizArtistas,char *tituloMusica);
 
+int cadastrarPlaylist(ArvBB **raizPlaylists, Playlist *playlist);
+
+int cadastrarMusicaPlaylist(ArvBB *raizArtistas, ArvBB *raizPlaylists, char *nomePlaylist, char *nomeArtista, char *tituloAlbum, char *tituloMusica);
+
+void exibirMusicaPlaylist(MusicaPlaylist musicaPlaylist);
+
+void mostrarMusicasPlaylist(ArvBB *raizMusicas);
+
+void mostrarPlaylists(ArvBB *raizPlaylists);
+
+
 #endif
