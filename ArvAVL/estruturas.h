@@ -67,7 +67,6 @@ struct ArvAVL{
     struct ArvAVL *dir;
 };
 
-//------------FUNÇÕES-----------
 
 int altura(ArvAVL *raiz);
 

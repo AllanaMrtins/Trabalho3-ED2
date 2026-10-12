@@ -1,9 +1,5 @@
 #include "estruturas.h"
 
-/* =========================================================
-   FUNÇÕES BÁSICAS DA AVL
-   ========================================================= */
-
 int altura(ArvAVL *raiz){
     int resultado;
 
@@ -45,9 +41,6 @@ int fatorBalanceamento(ArvAVL *raiz){
     return resultado;
 }
 
-/* =========================================================
-   ROTAÇÃO À DIREITA
-   ========================================================= */
 
 ArvAVL *rotacaoDireita(ArvAVL *raiz){
     ArvAVL *novaRaiz;
@@ -65,9 +58,6 @@ ArvAVL *rotacaoDireita(ArvAVL *raiz){
     return novaRaiz;
 }
 
-/* =========================================================
-   ROTAÇÃO À ESQUERDA
-   ========================================================= */
 
 ArvAVL *rotacaoEsquerda(ArvAVL *raiz){
     ArvAVL *novaRaiz;
@@ -85,9 +75,6 @@ ArvAVL *rotacaoEsquerda(ArvAVL *raiz){
     return novaRaiz;
 }
 
-/* =========================================================
-   CRIAR NÓ
-   ========================================================= */
 
 ArvAVL *criarNO(char *chave,int tipo,void *dado){
     ArvAVL *novo;
@@ -131,9 +118,6 @@ ArvAVL *criarNO(char *chave,int tipo,void *dado){
     return novo;
 }
 
-/* =========================================================
-   INSERÇÃO AVL
-   ========================================================= */
 
 ArvAVL *inserirArvAVL(ArvAVL *raiz,char *chave,int tipo,void *dado,int *resultado){
     int comparacao;
@@ -183,9 +167,6 @@ ArvAVL *inserirArvAVL(ArvAVL *raiz,char *chave,int tipo,void *dado,int *resultad
     return raiz;
 }
 
-/* =========================================================
-   INSERIR
-   ========================================================= */
 
 int inserir(ArvAVL **raiz,char *chave,int tipo,void *dado){
     int resultado;
@@ -197,9 +178,6 @@ int inserir(ArvAVL **raiz,char *chave,int tipo,void *dado){
     return resultado;
 }
 
-/* =========================================================
-   BUSCA
-   ========================================================= */
 
 ArvAVL *buscarArvAVL(ArvAVL *raiz,char *chave){
     ArvAVL *resultado;
@@ -223,9 +201,6 @@ ArvAVL *buscarArvAVL(ArvAVL *raiz,char *chave){
     return resultado;
 }
 
-/* =========================================================
-   MENOR NÓ
-   ========================================================= */
 
 ArvAVL *menorNo(ArvAVL *raiz){
     ArvAVL *resultado;
@@ -240,9 +215,6 @@ ArvAVL *menorNo(ArvAVL *raiz){
     return resultado;
 }
 
-/* =========================================================
-   REMOÇÃO AVL
-   ========================================================= */
 
 ArvAVL *removerArvAVL(ArvAVL *raiz,char *chave,int *resultado){
     int comparacao;
@@ -306,9 +278,6 @@ ArvAVL *removerArvAVL(ArvAVL *raiz,char *chave,int *resultado){
     return raiz;
 }
 
-/* =========================================================
-   CADASTRAR ARTISTA
-   ========================================================= */
 
 int cadastrarArtista(ArvAVL **raiz,Artista *artista){
     int resultado;
@@ -317,9 +286,6 @@ int cadastrarArtista(ArvAVL **raiz,Artista *artista){
     return resultado;
 }
 
-/* =========================================================
-   CADASTRAR ÁLBUM
-   ========================================================= */
 
 int cadastrarAlbum(ArvAVL *raizArtistas,char *nomeArtista,Album *album){
     ArvAVL *artistaEncontrado;
@@ -338,9 +304,6 @@ int cadastrarAlbum(ArvAVL *raizArtistas,char *nomeArtista,Album *album){
     return resultado;
 }
 
-/* =========================================================
-   CADASTRAR MÚSICA
-   ========================================================= */
 
 int cadastrarMusica(ArvAVL *raizArtistas,char *nomeArtista,char *tituloAlbum,Musica *musica){
     ArvAVL *artistaEncontrado;
@@ -365,9 +328,6 @@ int cadastrarMusica(ArvAVL *raizArtistas,char *nomeArtista,char *tituloAlbum,Mus
     return resultado;
 }
 
-/* =========================================================
-   EXIBIR ARTISTA
-   ========================================================= */
 
 void exibirArtista(Artista artista){
     printf("\nNome: %s", artista.nome);
@@ -376,9 +336,6 @@ void exibirArtista(Artista artista){
     printf("\nNumero de albuns: %d\n", artista.numeroAlbuns);
 }
 
-/* =========================================================
-   EXIBIR ÁLBUM
-   ========================================================= */
 
 void exibirAlbum(Album album){
     printf("\nTitulo: %s", album.titulo);
@@ -386,18 +343,12 @@ void exibirAlbum(Album album){
     printf("\nQuantidade de musicas: %d\n", album.qtdMusicas);
 }
 
-/* =========================================================
-   EXIBIR MÚSICA
-   ========================================================= */
 
 void exibirMusica(Musica musica){
     printf("\nTitulo: %s", musica.titulo);
     printf("\nDuracao: %.2f minutos\n",musica.minutos);
 }
 
-/* =========================================================
-   IV - MOSTRAR ARTISTAS
-   ========================================================= */
 
 void mostrarArtistas(ArvAVL *raiz){
     if (raiz != NULL){
@@ -407,9 +358,6 @@ void mostrarArtistas(ArvAVL *raiz){
     }
 }
 
-/* =========================================================
-   V - MOSTRAR ÁLBUNS DE DETERMINADO ANO
-   ========================================================= */
 
 void exibirAlbunsAno(ArvAVL *raizAlbuns,int ano){
     if (raizAlbuns != NULL){
@@ -422,9 +370,6 @@ void exibirAlbunsAno(ArvAVL *raizAlbuns,int ano){
     }
 }
 
-/* =========================================================
-   VI - EXIBIR MÚSICA ENCONTRADA
-   ========================================================= */
 
 void exibirMusicaEncontrada(ArvAVL *raizMusicas,char *tituloMusica,Artista artista,Album album){
     if (raizMusicas != NULL){
@@ -444,9 +389,6 @@ void exibirMusicaEncontrada(ArvAVL *raizMusicas,char *tituloMusica,Artista artis
     }
 }
 
-/* =========================================================
-   PROCURAR MÚSICA NOS ÁLBUNS
-   ========================================================= */
 
 void procurarMusicaAlbuns(ArvAVL *raizAlbuns,char *tituloMusica,Artista artista){
     if (raizAlbuns != NULL){
@@ -456,9 +398,6 @@ void procurarMusicaAlbuns(ArvAVL *raizAlbuns,char *tituloMusica,Artista artista)
     }
 }
 
-/* =========================================================
-   PROCURAR MÚSICA NOS ARTISTAS
-   ========================================================= */
 
 void procurarMusicaArtistas(ArvAVL *raizArtistas,char *tituloMusica){
     if (raizArtistas != NULL){
@@ -468,17 +407,11 @@ void procurarMusicaArtistas(ArvAVL *raizArtistas,char *tituloMusica){
     }
 }
 
-/* =========================================================
-   MOSTRAR DADOS DA MÚSICA
-   ========================================================= */
 
 void mostrarDadosMusica(ArvAVL *raizArtistas,char *tituloMusica){
     procurarMusicaArtistas(raizArtistas,tituloMusica);
 }
 
-/* =========================================================
-   VII - CADASTRAR PLAYLIST
-   ========================================================= */
 
 int cadastrarPlaylist(ArvAVL **raizPlaylists,Playlist *playlist){
     int resultado;
@@ -487,9 +420,6 @@ int cadastrarPlaylist(ArvAVL **raizPlaylists,Playlist *playlist){
     return resultado;
 }
 
-/* =========================================================
-   CADASTRAR MÚSICA NA PLAYLIST
-   ========================================================= */
 
 int cadastrarMusicaPlaylist(ArvAVL *raizArtistas,ArvAVL *raizPlaylists,char *nomePlaylist,char *nomeArtista,char *tituloAlbum,char *tituloMusica){
     ArvAVL *playlistEncontrada;
@@ -531,9 +461,6 @@ int cadastrarMusicaPlaylist(ArvAVL *raizArtistas,ArvAVL *raizPlaylists,char *nom
     return resultado;
 }
 
-/* =========================================================
-   EXIBIR MÚSICA DA PLAYLIST
-   ========================================================= */
 
 void exibirMusicaPlaylist(MusicaPlaylist musicaPlaylist){
     printf("\nArtista: %s",musicaPlaylist.nomeArtista);
@@ -541,9 +468,6 @@ void exibirMusicaPlaylist(MusicaPlaylist musicaPlaylist){
     printf("\nMusica: %s\n",musicaPlaylist.tituloMusica);
 }
 
-/* =========================================================
-   MOSTRAR MÚSICAS DA PLAYLIST
-   ========================================================= */
 
 void mostrarMusicasPlaylist(ArvAVL *raizMusicas){
     if (raizMusicas != NULL){
@@ -553,9 +477,6 @@ void mostrarMusicasPlaylist(ArvAVL *raizMusicas){
     }
 }
 
-/* =========================================================
-   VIII - MOSTRAR PLAYLIST
-   ========================================================= */
 
 void mostrarDadosPlaylist(ArvAVL *raizPlaylists,char *nomePlaylist){
     ArvAVL *playlistEncontrada;
@@ -575,9 +496,6 @@ void mostrarDadosPlaylist(ArvAVL *raizPlaylists,char *nomePlaylist){
     else printf("\nPlaylist nao encontrada.\n");    
 }
 
-/* =========================================================
-   IX - REMOVER MÚSICA DA PLAYLIST
-   ========================================================= */
 
 int removerMusicaPlaylist(ArvAVL *raizPlaylists,char *nomePlaylist,char *nomeArtista,char *tituloAlbum,char *tituloMusica){
     ArvAVL *playlistEncontrada;
@@ -597,9 +515,6 @@ int removerMusicaPlaylist(ArvAVL *raizPlaylists,char *nomePlaylist,char *nomeArt
     return resultado;
 }
 
-/* =========================================================
-   VERIFICAR MÚSICA EM PLAYLIST
-   ========================================================= */
 
 int musicaEstaEmPlaylist(ArvAVL *raizPlaylists,char *nomeArtista,char *tituloAlbum,char *tituloMusica){
     char chave[100];
@@ -623,9 +538,6 @@ int musicaEstaEmPlaylist(ArvAVL *raizPlaylists,char *nomeArtista,char *tituloAlb
     return resultado;
 }
 
-/* =========================================================
-   X - REMOVER MÚSICA DO ÁLBUM
-   ========================================================= */
 
 int removerMusicaAlbum(ArvAVL *raizArtistas,ArvAVL *raizPlaylists,char *nomeArtista,char *tituloAlbum,char *tituloMusica){
     ArvAVL *artistaEncontrado;
