@@ -7,11 +7,11 @@
 #define TIPO_PLAYLIST        4
 #define TIPO_MUSICA_PLAYLIST 5
 
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
-#include<ctype.h>
-#include<time.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include <time.h>
 
 typedef struct ArvBB ArvBB;
 
@@ -21,30 +21,30 @@ typedef struct{
     char estilo[50];
     int numeroAlbuns;
     ArvBB *albuns;
-}Artista;
+} Artista;
 
 typedef struct{
     char titulo[100];
     int ano;
     int qtdMusicas;
     ArvBB *musicas;
-}Album;
+} Album;
 
 typedef struct{
     char titulo[100];
     int minutos;
-}Musica;
+} Musica;
 
 typedef struct{
     char nome[100];
     ArvBB *musicas;
-}Playlist;
+} Playlist;
 
 typedef struct{
     char nomeArtista[100];
     char tituloAlbum[100];
     char tituloMusica[100];
-}MusicaPlaylist;
+} MusicaPlaylist;
 
 typedef union{
     Artista artista;
@@ -52,13 +52,13 @@ typedef union{
     Musica musica;
     Playlist playlist;
     MusicaPlaylist musicaplaylist;
-}Dado;
+} Dado;
 
 typedef struct{
     char chave[100];
     int tipo;
     Dado dado;
-}Info;
+} Info;
 
 struct ArvBB{
     Info info;
@@ -78,7 +78,7 @@ int cadastrarArtista(ArvBB **raiz, Artista *artista);
 
 int cadastrarAlbum(ArvBB *raizArtistas, char *nomeArtista, Album *album);
 
-int cadastrarMusica(ArvBB *raizArtistas, char *nomeArtista, char *tituloAlbum, Musica *musica); 
+int cadastrarMusica(ArvBB *raizArtistas, char *nomeArtista, char *tituloAlbum, Musica *musica);
 
 void mostrarArtistas(ArvBB *raiz);
 
@@ -96,7 +96,7 @@ void procurarMusicaAlbuns(ArvBB *raizAlbuns, char *tituloMusica, Artista artista
 
 void procurarMusicaArtistas(ArvBB *raizArtistas, char *tituloMusica);
 
-void mostrarDadosMusica(ArvBB *raizArtistas,char *tituloMusica);
+void mostrarDadosMusica(ArvBB *raizArtistas, char *tituloMusica);
 
 int cadastrarPlaylist(ArvBB **raizPlaylists, Playlist *playlist);
 
@@ -112,5 +112,8 @@ void mostrarDadosPlaylist(ArvBB *raizPlaylists, char *nomePlaylist);
 
 int removerMusicaPlaylist(ArvBB *raizPlaylists, char *nomePlaylist, char *nomeArtista, char *tituloAlbum, char *tituloMusica);
 
+int musicaEstaEmPlaylist(ArvBB *raizPlaylists, char *nomeArtista, char *tituloAlbum, char *tituloMusica);
+
+int removerMusicaAlbum(ArvBB *raizArtistas, ArvBB *raizPlaylists, char *nomeArtista, char *tituloAlbum, char *tituloMusica);
 
 #endif
