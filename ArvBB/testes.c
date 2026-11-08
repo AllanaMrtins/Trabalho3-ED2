@@ -11,7 +11,7 @@
 #define REPETICOES_BUSCA_TEMPO 1000000
 
 //Retorna o tempo em segundos usando um contador de alta resolucao
-double obter_tempo(void) {
+double obter_tempo() {
     double tempo = 0;
 
 #ifdef _WIN32
@@ -332,7 +332,7 @@ void testar_busca_ausente(char descricao[], ArvBB *raiz, FILE *arquivo) {
 }
 
 //Executa a bateria completa chamada pela opcao 12 do menu
-void executar_testes(void) {
+void executar_testes() {
     char nomes[QUANTIDADE][TAMANHO_NOME];
     char ordens[3][QUANTIDADE][TAMANHO_NOME];
     char descricao[3][30] = {

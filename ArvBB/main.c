@@ -1,6 +1,6 @@
 #include "estruturas.h"
 
-void executar_testes(void);
+void executar_testes();
 
 int main(){
     ArvBB *raizArtistas = NULL;
