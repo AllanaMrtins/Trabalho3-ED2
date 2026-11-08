@@ -1,5 +1,7 @@
 #include "estruturas.h"
 
+void executar_testes(void);
+
 int main(){
     ArvBB *raizArtistas = NULL;
     ArvBB *raizPlaylists = NULL;
@@ -31,6 +33,8 @@ int main(){
         printf("\n9 - Mostrar playlist");
         printf("\n10 - Remover musica da playlist");
         printf("\n11 - Remover musica do album");
+        printf("\n12 - Executar todos os testes da ABB");
+        printf("\n13 - Explicar os testes da ABB");
         printf("\n0 - Sair");
 
         printf("\n\nDigite uma opcao: ");
@@ -287,6 +291,24 @@ int main(){
                 else
                     printf("\nNao foi possivel remover a musica.\n");
 
+                break;
+            case 12:
+                printf("\n===== BATERIA COMPLETA DE TESTES DA ABB =====\n");
+                printf("Os testes usam uma arvore separada e nao alteram sua biblioteca.\n");
+                printf("Serao testadas insercoes, buscas, duplicatas e nomes inexistentes.\n");
+                executar_testes();
+                break;
+            case 13:
+                printf("\n===== COMO FUNCIONAM OS TESTES =====\n");
+                printf("1. Sao gerados 100 nomes de artistas, usados nos tres cenarios.\n");
+                printf("2. Escada crescente: os nomes entram em ordem alfabetica.\n");
+                printf("3. Escada invertida: os mesmos nomes entram em ordem inversa.\n");
+                printf("4. Festival aleatorio: os mesmos nomes entram embaralhados.\n");
+                printf("5. Para cada insercao, sao medidos tempo e chamadas de insercao.\n");
+                printf("6. Os mesmos 10 artistas sao procurados em cada cenario.\n");
+                printf("7. Testes extras verificam artista duplicado e busca sem resultado.\n");
+                printf("8. Um CSV guarda os detalhes; a ABB nao faz rotacoes.\n");
+                printf("Compare principalmente chamadas e altura: os tempos variam.\n");
                 break;
             case 0:
 
