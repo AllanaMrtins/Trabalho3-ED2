@@ -1,9 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "estruturas.h"
-
 
 int main(){
     ArvAVL *raizArtistas = NULL;
@@ -40,13 +35,10 @@ int main(){
 
         printf("\n\nDigite uma opcao: ");
         scanf("%d", &opcao);
-
         getchar();
 
         switch (opcao){
-
             case 1:
-
                 printf("\n===== CADASTRAR ARTISTA =====\n");
 
                 printf("Nome: ");
@@ -66,20 +58,15 @@ int main(){
 
                 artista.numeroAlbuns = 0;
                 artista.albuns = NULL;
-
                 resultado = cadastrarArtista(&raizArtistas,&artista);
                     
                 if (resultado)
                     printf("\nArtista cadastrado com sucesso!\n");
-                
                 else
                     printf("\nArtista ja cadastrado!\n");
-
                 break;
 
-
             case 2:
-
                 printf("\n===== CADASTRAR ALBUM =====\n");
 
                 printf("Nome do artista: ");
@@ -96,23 +83,17 @@ int main(){
                 scanf("%d", &album.ano);
 
                 getchar();
-
                 album.qtdMusicas = 0;
                 album.musicas = NULL;
-
                 resultado = cadastrarAlbum(raizArtistas,artista.nome,&album);
 
                 if (resultado)
                     printf("\nAlbum cadastrado com sucesso!\n");
-
                 else
-                    printf("\nNao foi possivel cadastrar o album.\n" );
-                        
+                    printf("\nNao foi possivel cadastrar o album.\n" );    
                 break;
 
-
             case 3:
-
                 printf("\n===== CADASTRAR MUSICA =====\n");
 
                 printf("Nome do artista: ");
@@ -132,37 +113,25 @@ int main(){
 
                 printf("Duracao em minutos: ");
                 scanf("%f", &musica.minutos);
-
                 getchar();
-
                 resultado = cadastrarMusica(raizArtistas,artista.nome,album.titulo,&musica);
 
                 if (resultado)
                     printf("\nMusica cadastrada com sucesso!\n" );
-                   
                 else
                     printf("\nNao foi possivel cadastrar a musica.\n");
-
                 break;
-
-
             case 4:
-
                 printf("\n===== TODOS OS ARTISTAS =====\n");
-
                 if (raizArtistas == NULL)
                     printf("Nenhum artista cadastrado.\n");
-                        
                 else
                     mostrarArtistas(raizArtistas);
-
                 break;
 
 
             case 5:
-
                 printf("\n===== ALBUNS DE DETERMINADO ANO =====\n");
-
                 printf("Nome do artista: ");
                 fgets(artista.nome,sizeof(artista.nome),stdin);
                     
@@ -183,11 +152,8 @@ int main(){
 
                 break;
 
-
             case 6:
-
                 printf("\n===== BUSCAR MUSICA =====\n");
-
                 printf("Titulo da musica: ");
                 fgets(musica.titulo,sizeof(musica.titulo),stdin);
 
@@ -197,9 +163,7 @@ int main(){
 
 
             case 7:
-
                 printf("\n===== CADASTRAR PLAYLIST =====\n");
-
                 printf("Nome da playlist: ");
                 fgets(playlist.nome,sizeof(playlist.nome),stdin);
 
@@ -218,7 +182,6 @@ int main(){
 
 
             case 8:
-
                 printf("\n===== ADICIONAR MUSICA NA PLAYLIST =====\n");
 
                 printf("Nome da playlist: ");
@@ -253,9 +216,7 @@ int main(){
 
 
             case 9:
-
                 printf("\n===== MOSTRAR PLAYLIST =====\n");
-
                 printf("Nome da playlist: ");
                 fgets(playlist.nome,sizeof(playlist.nome),stdin);
 
@@ -266,9 +227,7 @@ int main(){
 
 
             case 10:
-
                 printf("\n===== REMOVER MUSICA DA PLAYLIST =====\n");
-                    
                 printf("Nome da playlist: ");
                 fgets(playlist.nome,sizeof(playlist.nome),stdin);
 
@@ -299,11 +258,8 @@ int main(){
 
                 break;
 
-
             case 11:
-
                 printf("\n===== REMOVER MUSICA DO ALBUM =====\n");
-
                 printf("Nome do artista: ");
                 fgets(artista.nome,sizeof(artista.nome),stdin);
 
@@ -329,19 +285,13 @@ int main(){
 
                 break;
 
-
             case 0:
-
                 printf("\nEncerrando o programa...\n");
                 break;
-
             default:
-
                 printf("\nOpcao invalida!\n");
                 break;
         }
-
     } while (opcao != 0);
-
     return 0;
 }

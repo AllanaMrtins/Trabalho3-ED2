@@ -1,7 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "estruturas.h"
+
+void executar_testes(void);
+void explicar_testes(void);
 
 int main(void) {
     ArvVermelhaPreta *raizArtistas = NULL;
@@ -29,6 +29,8 @@ int main(void) {
         printf("\n9 - Mostrar playlist");
         printf("\n10 - Remover musica da playlist");
         printf("\n11 - Remover musica do album");
+        printf("\n12 - Executar testes da arvore rubro-negra");
+        printf("\n13 - Explicar os testes da arvore rubro-negra");
         printf("\n0 - Sair");
 
         printf("\n\nDigite uma opcao: ");
@@ -288,6 +290,14 @@ int main(void) {
                     printf("\nMusica removida do album!\n");
                 else 
                     printf("\nNao foi possivel remover a musica.\n");
+                break;
+
+            case 12:
+                executar_testes();
+                break;
+
+            case 13:
+                explicar_testes();
                 break;
 
             case 0:

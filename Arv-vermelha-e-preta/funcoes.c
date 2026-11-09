@@ -1,7 +1,14 @@
 #include "estruturas.h"
 
+int contabilizarRotacoes = 0;
+int chamadasRotacaoEsquerda = 0;
+int chamadasRotacaoDireita = 0;
+int chamadasEhVermelho = 0;
+int chamadasInverterCores = 0;
 
 int ehVermelho(ArvVermelhaPreta *no) {
+    if (contabilizarRotacoes)
+        chamadasEhVermelho++;
     int resultado = 0;
     if (no != NULL && no->cor == RED)
         resultado = 1;
@@ -9,6 +16,8 @@ int ehVermelho(ArvVermelhaPreta *no) {
 }
 
 ArvVermelhaPreta *rotacaoEsquerda(ArvVermelhaPreta *raiz) {
+    if (contabilizarRotacoes)
+        chamadasRotacaoEsquerda++;
     ArvVermelhaPreta *aux = raiz->dir;
     raiz->dir = aux->esq;
     aux->esq = raiz;
@@ -18,6 +27,8 @@ ArvVermelhaPreta *rotacaoEsquerda(ArvVermelhaPreta *raiz) {
 }
 
 ArvVermelhaPreta *rotacaoDireita(ArvVermelhaPreta *raiz) {
+    if (contabilizarRotacoes)
+        chamadasRotacaoDireita++;
     ArvVermelhaPreta *aux = raiz->esq;
     raiz->esq = aux->dir;
     aux->dir = raiz;
@@ -27,6 +38,8 @@ ArvVermelhaPreta *rotacaoDireita(ArvVermelhaPreta *raiz) {
 }
 
 void inverterCores(ArvVermelhaPreta *raiz) {
+    if (contabilizarRotacoes)
+        chamadasInverterCores++;
     if (raiz != NULL) {
         raiz->cor = !raiz->cor;
         if (raiz->esq != NULL)
