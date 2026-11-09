@@ -581,7 +581,7 @@ void executar_testes(void) {
         liberar_arvore(raizes[j]);
 }
 
-void explicar_testes(void) {
+void explicar_testes() {
     printf("\n===== COMO FUNCIONAM OS TESTES RUBRO-NEGROS =====\n");
     printf("1. Sao criados 100 nomes de artistas, sempre os mesmos.\n");
     printf("2. Os nomes sao inseridos em ordem crescente, decrescente e aleatoria.\n");

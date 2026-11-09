@@ -1,9 +1,9 @@
 #include "estruturas.h"
 
-void executar_testes(void);
-void explicar_testes(void);
+void executar_testes();
+void explicar_testes();
 
-int main(void) {
+int main() {
     ArvVermelhaPreta *raizArtistas = NULL;
     ArvVermelhaPreta *raizPlaylists = NULL;
     Artista artista;
