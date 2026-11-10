@@ -1,6 +1,28 @@
 #include "estruturas.h"
 
+int contabilizarMetricasAVL = 0;
+int chamadasAlturaAVL = 0;
+int chamadasMaiorAVL = 0;
+int chamadasAtualizarAlturaAVL = 0;
+int chamadasFatorBalanceamentoAVL = 0;
+int chamadasRotacaoDireitaAVL = 0;
+int chamadasRotacaoEsquerdaAVL = 0;
+int chamadasCriarNOAVL = 0;
+int chamadasInserirArvAVL = 0;
+int chamadasInserirAVL = 0;
+int chamadasBuscarArvAVL = 0;
+int chamadasCadastrarArtistaAVL = 0;
+int comparacoesStrcmpAVL = 0;
+
+int compararChavesAVL(char chave1[], char chave2[]) {
+    if (contabilizarMetricasAVL)
+        comparacoesStrcmpAVL++;
+    return strcmp(chave1, chave2);
+}
+
 int altura(ArvAVL *raiz){
+    if (contabilizarMetricasAVL)
+        chamadasAlturaAVL++;
     int resultado;
 
     if (raiz == NULL)
@@ -13,6 +35,8 @@ int altura(ArvAVL *raiz){
 
 
 int maior(int a, int b){
+    if (contabilizarMetricasAVL)
+        chamadasMaiorAVL++;
     int resultado;
 
     if (a > b)
@@ -25,12 +49,16 @@ int maior(int a, int b){
 
 
 void atualizarAltura(ArvAVL *raiz){
+    if (contabilizarMetricasAVL)
+        chamadasAtualizarAlturaAVL++;
     if (raiz != NULL)
         raiz->altura = 1 + maior(altura(raiz->esq),altura(raiz->dir)); 
 }
 
 
 int fatorBalanceamento(ArvAVL *raiz){
+    if (contabilizarMetricasAVL)
+        chamadasFatorBalanceamentoAVL++;
     int resultado;
 
     if (raiz == NULL)
@@ -43,6 +71,8 @@ int fatorBalanceamento(ArvAVL *raiz){
 
 
 ArvAVL *rotacaoDireita(ArvAVL *raiz){
+    if (contabilizarMetricasAVL)
+        chamadasRotacaoDireitaAVL++;
     ArvAVL *novaRaiz;
     ArvAVL *aux;
 
@@ -60,6 +90,8 @@ ArvAVL *rotacaoDireita(ArvAVL *raiz){
 
 
 ArvAVL *rotacaoEsquerda(ArvAVL *raiz){
+    if (contabilizarMetricasAVL)
+        chamadasRotacaoEsquerdaAVL++;
     ArvAVL *novaRaiz;
     ArvAVL *aux;
 
@@ -77,6 +109,8 @@ ArvAVL *rotacaoEsquerda(ArvAVL *raiz){
 
 
 ArvAVL *criarNO(char *chave,int tipo,void *dado){
+    if (contabilizarMetricasAVL)
+        chamadasCriarNOAVL++;
     ArvAVL *novo;
 
     novo = (ArvAVL *)malloc(sizeof(ArvAVL));
@@ -120,6 +154,8 @@ ArvAVL *criarNO(char *chave,int tipo,void *dado){
 
 
 ArvAVL *inserirArvAVL(ArvAVL *raiz,char *chave,int tipo,void *dado,int *resultado){
+    if (contabilizarMetricasAVL)
+        chamadasInserirArvAVL++;
     int comparacao;
     int fator;
 
@@ -130,7 +166,7 @@ ArvAVL *inserirArvAVL(ArvAVL *raiz,char *chave,int tipo,void *dado,int *resultad
             *resultado = 1;
     }
     else{
-        comparacao = strcmp(chave,raiz->info.chave);
+        comparacao = compararChavesAVL(chave,raiz->info.chave);
 
         if (comparacao < 0)
             raiz->esq = inserirArvAVL(raiz->esq,chave,tipo,dado,resultado);
@@ -146,18 +182,18 @@ ArvAVL *inserirArvAVL(ArvAVL *raiz,char *chave,int tipo,void *dado,int *resultad
 
             fator = fatorBalanceamento(raiz);
 
-            if (fator > 1 && strcmp(chave,raiz->esq->info.chave) < 0)
+            if (fator > 1 && compararChavesAVL(chave,raiz->esq->info.chave) < 0)
                 raiz = rotacaoDireita(raiz);
   
-            else if (fator < -1 && strcmp(chave,raiz->dir->info.chave) > 0)
+            else if (fator < -1 && compararChavesAVL(chave,raiz->dir->info.chave) > 0)
                 raiz = rotacaoEsquerda(raiz);
 
-            else if (fator > 1 && strcmp(chave,raiz->esq->info.chave) > 0){
+            else if (fator > 1 && compararChavesAVL(chave,raiz->esq->info.chave) > 0){
                 raiz->esq = rotacaoEsquerda(raiz->esq);
                 raiz = rotacaoDireita(raiz);
             }
 
-            else if (fator < -1 && strcmp(chave,raiz->dir->info.chave) < 0){
+            else if (fator < -1 && compararChavesAVL(chave,raiz->dir->info.chave) < 0){
                 raiz->dir = rotacaoDireita(raiz->dir);
                 raiz = rotacaoEsquerda(raiz);
             }
@@ -169,6 +205,8 @@ ArvAVL *inserirArvAVL(ArvAVL *raiz,char *chave,int tipo,void *dado,int *resultad
 
 
 int inserir(ArvAVL **raiz,char *chave,int tipo,void *dado){
+    if (contabilizarMetricasAVL)
+        chamadasInserirAVL++;
     int resultado;
 
     resultado = 0;
@@ -180,13 +218,15 @@ int inserir(ArvAVL **raiz,char *chave,int tipo,void *dado){
 
 
 ArvAVL *buscarArvAVL(ArvAVL *raiz,char *chave){
+    if (contabilizarMetricasAVL)
+        chamadasBuscarArvAVL++;
     ArvAVL *resultado;
     int comparacao;
 
     resultado = NULL;
 
     if (raiz != NULL){
-        comparacao = strcmp(chave, raiz->info.chave);
+        comparacao = compararChavesAVL(chave, raiz->info.chave);
            
         if (comparacao == 0)
             resultado = raiz;
@@ -280,6 +320,8 @@ ArvAVL *removerArvAVL(ArvAVL *raiz,char *chave,int *resultado){
 
 
 int cadastrarArtista(ArvAVL **raiz,Artista *artista){
+    if (contabilizarMetricasAVL)
+        chamadasCadastrarArtistaAVL++;
     int resultado;
     resultado = inserir(raiz,artista->nome, TIPO_ARTISTA,artista);
 

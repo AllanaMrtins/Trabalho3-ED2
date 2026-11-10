@@ -1,5 +1,8 @@
 #include "estruturas.h"
 
+void executar_testes_avl();
+void explicar_testes_avl();
+
 int main(){
     ArvAVL *raizArtistas = NULL;
     ArvAVL *raizPlaylists = NULL;
@@ -31,6 +34,8 @@ int main(){
         printf("\n9 - Mostrar playlist");
         printf("\n10 - Remover musica da playlist");
         printf("\n11 - Remover musica do album");
+        printf("\n12 - Executar testes da arvore AVL");
+        printf("\n13 - Explicar os testes da arvore AVL");
         printf("\n0 - Sair");
 
         printf("\n\nDigite uma opcao: ");
@@ -58,6 +63,7 @@ int main(){
 
                 artista.numeroAlbuns = 0;
                 artista.albuns = NULL;
+
                 resultado = cadastrarArtista(&raizArtistas,&artista);
                     
                 if (resultado)
@@ -83,12 +89,15 @@ int main(){
                 scanf("%d", &album.ano);
 
                 getchar();
+
                 album.qtdMusicas = 0;
                 album.musicas = NULL;
+
                 resultado = cadastrarAlbum(raizArtistas,artista.nome,&album);
 
                 if (resultado)
                     printf("\nAlbum cadastrado com sucesso!\n");
+
                 else
                     printf("\nNao foi possivel cadastrar o album.\n" );    
                 break;
@@ -113,7 +122,9 @@ int main(){
 
                 printf("Duracao em minutos: ");
                 scanf("%f", &musica.minutos);
+
                 getchar();
+
                 resultado = cadastrarMusica(raizArtistas,artista.nome,album.titulo,&musica);
 
                 if (resultado)
@@ -121,17 +132,20 @@ int main(){
                 else
                     printf("\nNao foi possivel cadastrar a musica.\n");
                 break;
+
             case 4:
                 printf("\n===== TODOS OS ARTISTAS =====\n");
+
                 if (raizArtistas == NULL)
                     printf("Nenhum artista cadastrado.\n");
+                        
                 else
                     mostrarArtistas(raizArtistas);
                 break;
 
-
             case 5:
                 printf("\n===== ALBUNS DE DETERMINADO ANO =====\n");
+
                 printf("Nome do artista: ");
                 fgets(artista.nome,sizeof(artista.nome),stdin);
                     
@@ -154,6 +168,7 @@ int main(){
 
             case 6:
                 printf("\n===== BUSCAR MUSICA =====\n");
+
                 printf("Titulo da musica: ");
                 fgets(musica.titulo,sizeof(musica.titulo),stdin);
 
@@ -161,9 +176,9 @@ int main(){
                 mostrarDadosMusica(raizArtistas,musica.titulo);
                 break;
 
-
             case 7:
                 printf("\n===== CADASTRAR PLAYLIST =====\n");
+
                 printf("Nome da playlist: ");
                 fgets(playlist.nome,sizeof(playlist.nome),stdin);
 
@@ -208,15 +223,13 @@ int main(){
 
                 if (resultado)
                     printf("\nMusica adicionada a playlist!\n" );
-
                 else
                     printf("\nNao foi possivel adicionar a musica.\n");
-
                 break;
-
 
             case 9:
                 printf("\n===== MOSTRAR PLAYLIST =====\n");
+
                 printf("Nome da playlist: ");
                 fgets(playlist.nome,sizeof(playlist.nome),stdin);
 
@@ -225,9 +238,9 @@ int main(){
                 mostrarDadosPlaylist( raizPlaylists,playlist.nome);
                 break;
 
-
             case 10:
                 printf("\n===== REMOVER MUSICA DA PLAYLIST =====\n");
+                    
                 printf("Nome da playlist: ");
                 fgets(playlist.nome,sizeof(playlist.nome),stdin);
 
@@ -252,14 +265,14 @@ int main(){
                     
                 if (resultado)
                     printf("\nMusica removida da playlist!\n");
-
                 else
                     printf("\nMusica nao encontrada na playlist.\n");
-
                 break;
+
 
             case 11:
                 printf("\n===== REMOVER MUSICA DO ALBUM =====\n");
+
                 printf("Nome do artista: ");
                 fgets(artista.nome,sizeof(artista.nome),stdin);
 
@@ -279,12 +292,15 @@ int main(){
 
                 if (resultado)
                     printf("\nMusica removida do album!\n");
-
                 else
                     printf("\nNao foi possivel remover a musica.\n");
-
                 break;
-
+            case 12:
+                executar_testes_avl();
+                break;
+            case 13:
+                explicar_testes_avl();
+                break;
             case 0:
                 printf("\nEncerrando o programa...\n");
                 break;
