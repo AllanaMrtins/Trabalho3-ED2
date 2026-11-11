@@ -494,10 +494,10 @@ void executar_testes(void) {
     }
 
     printf("\n============================================================\n");
-    printf("BATERIA DE TESTES: ARVORE RUBRO-NEGRA\n");
+    printf("BATERIA DE TESTES: ARVORE VERMELHA E PRETA\n");
     printf("============================================================\n");
     printf("OBJETIVO\n");
-    printf("Medir como a ordem de entrada afeta a arvore rubro-negra.\n");
+    printf("Medir como a ordem de entrada afeta a arvore vermelha e preta.\n");
     printf("Os mesmos 100 artistas serao usados nos tres cenarios.\n");
     printf("As arvores de teste nao alteram os dados da biblioteca.\n");
 
@@ -527,9 +527,9 @@ void executar_testes(void) {
         printf("  Altura: %d; altura preta: %d.\n", alturas[i], alturas_pretas[i]);
 
         if (validacoes[i] == 1)
-            printf("  Validacao rubro-negra: PASSOU.\n");
+            printf("  Validacao da vermelha e preta: PASSOU.\n");
         else
-            printf("  FALHA: uma propriedade rubro-negra foi violada.\n");
+            printf("  FALHA: uma propriedade da vermelha e preta foi violada.\n");
 
         if (contar_nos(raizes[i]) == QUANTIDADE)
             printf("  Validacao: os 100 artistas estao na arvore.\n");
@@ -582,7 +582,7 @@ void executar_testes(void) {
 }
 
 void explicar_testes() {
-    printf("\n===== COMO FUNCIONAM OS TESTES RUBRO-NEGROS =====\n");
+    printf("\n===== COMO FUNCIONAM OS TESTES DA VERMELHA E PRETA =====\n");
     printf("1. Sao criados 100 nomes de artistas, sempre os mesmos.\n");
     printf("2. Os nomes sao inseridos em ordem crescente, decrescente e aleatoria.\n");
     printf("3. O tempo e medido em lotes repetidos, sem preparar dados no cronometro.\n");
