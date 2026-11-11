@@ -89,7 +89,7 @@ A implementação utiliza:
 
 **Ponto de análise:** o balanceamento mantém a árvore com altura controlada, favorecendo operações de busca, inserção e remoção.
 
-### 3. Árvore Rubro-Negra
+### 3. Árvore Vermelha e preta
 
 A árvore Rubro-Negra é uma árvore binária de busca autobalanceada que utiliza cores para manter suas propriedades estruturais.
 
@@ -225,7 +225,7 @@ cd ArvBB
 cd ArvAVL
 ```
 
-**Rubro-Negra:**
+**Vermelha-preta:**
 
 ```bash
 cd Arv-vermelha-e-preta
@@ -254,16 +254,6 @@ biblioteca.exe
 ```
 
 Depois da execução, utilize as opções apresentadas no menu para cadastrar e consultar os dados ou executar os testes.
-
-## Comparação teórica das estruturas
-
-| Estrutura | Busca | Inserção | Remoção | Balanceamento automático |
-|---|---:|---:|---:|:---:|
-| ABB | O(h) | O(h) | O(h) | Não |
-| AVL | O(log n) | O(log n) | O(log n) | Sim |
-| Rubro-Negra | O(log n) | O(log n) | O(log n) | Sim |
-
-`n` representa a quantidade de nós e `h` representa a altura da árvore. Na ABB, a altura pode chegar a `n` em casos desfavoráveis; nas árvores AVL e Rubro-Negra, as regras de balanceamento mantêm altura logarítmica.
 
 ## Conceitos praticados
 
