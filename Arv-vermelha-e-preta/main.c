@@ -29,8 +29,8 @@ int main() {
         printf("\n9 - Mostrar playlist");
         printf("\n10 - Remover musica da playlist");
         printf("\n11 - Remover musica do album");
-        printf("\n12 - Executar testes da arvore rubro-negra");
-        printf("\n13 - Explicar os testes da arvore rubro-negra");
+        printf("\n12 - Executar testes da arvore vermelha e preta");
+        printf("\n13 - Explicar os testes da arvore vermelha e preta");
         printf("\n0 - Sair");
 
         printf("\n\nDigite uma opcao: ");
