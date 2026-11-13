@@ -11,7 +11,7 @@
 #define REPETICOES_BUSCA_TEMPO 1000000
 
 //Retorna o tempo em segundos usando um contador de alta resolucao
-double obter_tempo() {
+double obter_tempo(void) {
     double tempo = 0;
 
 #ifdef _WIN32
@@ -154,8 +154,10 @@ void inserir_cenario(char nomes[QUANTIDADE][TAMANHO_NOME], char descricao[],
                      double *tempo_medio, int *chamadas_total,
                      int *comparacoes_total) {
     ArvBB *arvores_tempo[REPETICOES_INSERCAO_TEMPO];
+    ArvBB *arvore_tempo_individual;
     Artista artistas[QUANTIDADE];
     double inicio, fim;
+    double tempos_individuais[QUANTIDADE];
     int repeticao, i, passos, chamadas, resultado;
 
     //Prepara os registros antes do cronometro para medir so as insercoes
@@ -183,10 +185,44 @@ void inserir_cenario(char nomes[QUANTIDADE][TAMANHO_NOME], char descricao[],
     for (repeticao = 0; repeticao < REPETICOES_INSERCAO_TEMPO; repeticao++)
         liberar_arvore(arvores_tempo[repeticao]);
 
+    //Mede cada insercao individual em 100 repeticoes do mesmo cenario
+    for (i = 0; i < QUANTIDADE; i++)
+        tempos_individuais[i] = 0;
+
+    for (repeticao = 0; repeticao < REPETICOES_INSERCAO_TEMPO; repeticao++) {
+        arvore_tempo_individual = NULL;
+        for (i = 0; i < QUANTIDADE; i++) {
+            inicio = obter_tempo();
+            resultado = cadastrarArtista(&arvore_tempo_individual, &artistas[i]);
+            fim = obter_tempo();
+
+            if (resultado == 0) {
+                printf("ERRO: falha ao medir a insercao individual de %s.\n",
+                       artistas[i].nome);
+                exit(1);
+            }
+
+            tempos_individuais[i] = tempos_individuais[i] + (fim - inicio);
+        }
+        liberar_arvore(arvore_tempo_individual);
+    }
+
+    for (i = 0; i < QUANTIDADE; i++)
+        tempos_individuais[i] = tempos_individuais[i] / REPETICOES_INSERCAO_TEMPO;
+
     //Constroi uma arvore definitiva para contar chamadas e fazer buscas
     *raiz = NULL;
     *chamadas_total = 0;
     *comparacoes_total = 0;
+
+    printf("Tabela: tempo individual medio de %d repeticoes por artista.\n",
+           REPETICOES_INSERCAO_TEMPO);
+    printf("Chamadas fixas por artista: cadastrarArtista=1, criarNO=1, buscarArvBB=0; a ABB nao faz rotacoes.\n");
+    printf("Passos contam os nos visitados; inserirArvBB inclui a chamada final ao NULL.\n");
+    printf("  %-14s | %14s | %6s | %13s | %6s | %5s | %5s\n",
+           "Artista", "Tempo (s)", "Passos", "inserirArvBB", "strcmp",
+           "Rot E", "Rot D");
+    printf("  ---------------+----------------+--------+---------------+--------+-------+-------\n");
 
     for (i = 0; i < QUANTIDADE; i++) {
         passos = contar_passos(*raiz, artistas[i].nome);
@@ -201,12 +237,18 @@ void inserir_cenario(char nomes[QUANTIDADE][TAMANHO_NOME], char descricao[],
         *chamadas_total = *chamadas_total + chamadas;
         *comparacoes_total = *comparacoes_total + passos;
 
+        printf("  %-14s | %14.9f | %6d | %13d | %6d | %5d | %5d\n",
+               artistas[i].nome, tempos_individuais[i], passos, chamadas,
+               passos, 0, 0);
+
         if (arquivo != NULL) {
             fprintf(arquivo,
                     "ABB;%s;INSERCAO;%s;%.9f;;1;%d;1;0;%d;0;\n",
-                    descricao, artistas[i].nome, *tempo_medio, chamadas, passos);
+                    descricao, artistas[i].nome, tempos_individuais[i], chamadas, passos);
         }
     }
+
+    printf("  ---------------+----------------+--------+---------------+--------+-------+-------\n");
 
     if (arquivo != NULL) {
         fprintf(arquivo,
@@ -216,7 +258,6 @@ void inserir_cenario(char nomes[QUANTIDADE][TAMANHO_NOME], char descricao[],
     }
 }
 
-//Confirma que a arvore recusa o cadastro de um artista repetido
 void testar_duplicata(char descricao[], char nome[], ArvBB *raiz, FILE *arquivo) {
     Artista artista;
     int passos, resultado, quantidade_antes, aprovado = 0;
@@ -242,9 +283,11 @@ void testar_duplicata(char descricao[], char nome[], ArvBB *raiz, FILE *arquivo)
     }
 }
 
-//Mede cada busca em um lote repetido e conta os passos de uma busca
-void testar_buscas(char descricao[], ArvBB *raiz,char consultas[QUANTIDADE_BUSCAS][TAMANHO_NOME],FILE *arquivo, double *tempo_total,
-int *chamadas_total, int *comparacoes_total) {
+//mede cada busca em um lote repetido e conta os passos de uma busca
+void testar_buscas(char descricao[], ArvBB *raiz,
+                   char consultas[QUANTIDADE_BUSCAS][TAMANHO_NOME],
+                   FILE *arquivo, double *tempo_total,
+                   int *chamadas_total, int *comparacoes_total) {
     int i, repeticao, passos;
     double inicio, fim;
     double duracao;
@@ -331,7 +374,6 @@ void testar_busca_ausente(char descricao[], ArvBB *raiz, FILE *arquivo) {
     }
 }
 
-//Executa a bateria completa chamada pela opcao 12 do menu
 void executar_testes() {
     char nomes[QUANTIDADE][TAMANHO_NOME];
     char ordens[3][QUANTIDADE][TAMANHO_NOME];
@@ -374,8 +416,11 @@ void executar_testes() {
         printf("AVISO: nao foi possivel criar o CSV; os testes aparecerao na tela.\n");
 
     if (arquivo != NULL) {
-        fprintf(arquivo,"arvore;cenario;operacao;chave;tempo_medio_operacao_s;""tempo_medio_lote_s;chamadas_cadastrarArtista;chamadas_inserirArvBB;"
-         "chamadas_criarNO;chamadas_buscarArvBB;comparacoes_strcmp;""chamadas_rotacao;altura_final\n");
+        fprintf(arquivo,
+                "arvore;cenario;operacao;chave;tempo_medio_operacao_s;"
+                "tempo_medio_lote_s;chamadas_cadastrarArtista;chamadas_inserirArvBB;"
+                "chamadas_criarNO;chamadas_buscarArvBB;comparacoes_strcmp;"
+                "chamadas_rotacao;altura_final\n");
     }
 
     printf("\n============================================================\n");
@@ -391,6 +436,8 @@ void executar_testes() {
     printf("- strcmp: comparacoes entre nomes durante a operacao.\n");
     printf("- Altura: maior caminho da raiz ate uma folha.\n");
     printf("- O tempo de insercao exclui a preparacao dos dados.\n");
+    printf("- O tempo individual de cada artista e a media de %d repeticoes.\n",
+           REPETICOES_INSERCAO_TEMPO);
     printf("- O CSV separa media por operacao e media do lote.\n");
     printf("- Tempo de busca: media de %d repeticoes por nome.\n",
            REPETICOES_BUSCA_TEMPO);
@@ -402,13 +449,17 @@ void executar_testes() {
 
     for (i = 0; i < 3; i++) {
         printf("\nCENARIO %d: %s\n", i + 1, descricao[i]);
-        inserir_cenario(ordens[i], descricao[i], &raizes[i], arquivo,&tempo_lote[i], &tempo_medio[i],
-        &chamadas_insercao[i], &comparacoes_insercao[i]);
+        inserir_cenario(ordens[i], descricao[i], &raizes[i], arquivo,
+                        &tempo_lote[i], &tempo_medio[i],
+                        &chamadas_insercao[i], &comparacoes_insercao[i]);
         alturas[i] = calcular_altura(raizes[i]);
 
         printf("  Tempo medio do lote de 100 insercoes: %.9f s\n", tempo_lote[i]);
         printf("  Tempo medio estimado por artista: %.9f s\n", tempo_medio[i]);
-        printf("  Chamadas inserirArvBB: %d; media %.2f por artista.\n",chamadas_insercao[i],(double)chamadas_insercao[i] / QUANTIDADE);
+        printf("  Chamadas fixas: cadastrarArtista 100; criarNO 100; buscarArvBB 0; rotacoes 0.\n");
+        printf("  Chamadas inserirArvBB: %d; media %.2f por artista.\n",
+               chamadas_insercao[i],
+               (double)chamadas_insercao[i] / QUANTIDADE);
         printf("  Comparacoes strcmp: %d.\n", comparacoes_insercao[i]);
         printf("  Altura final: %d.\n", alturas[i]);
 
@@ -423,14 +474,17 @@ void executar_testes() {
 
     for (i = 0; i < 3; i++) {
         printf("\nCENARIO: %s\n", descricao[i]);
-        testar_buscas(descricao[i], raizes[i], consultas, arquivo,&tempo_busca[i], &chamadas_busca[i],&comparacoes_busca[i]);
-        printf("  Chamadas nas 10 buscas: %d; media %.2f por busca.\n",chamadas_busca[i],(double)chamadas_busca[i] / QUANTIDADE_BUSCAS);
+        testar_buscas(descricao[i], raizes[i], consultas, arquivo,
+                      &tempo_busca[i], &chamadas_busca[i],
+                      &comparacoes_busca[i]);
+        printf("  Chamadas nas 10 buscas: %d; media %.2f por busca.\n",
+               chamadas_busca[i],
+               (double)chamadas_busca[i] / QUANTIDADE_BUSCAS);
         printf("  Tempo estimado das 10 buscas: %.9f s.\n", tempo_busca[i]);
     }
 
     printf("\nETAPA 3 DE 4: TESTES COMPLEMENTARES\n");
     printf("A. Cadastro duplicado: deve ser recusado.\n");
-
     for (i = 0; i < 3; i++) {
         printf("  %s:\n", descricao[i]);
         testar_duplicata(descricao[i], ordens[i][0], raizes[i], arquivo);
@@ -449,7 +503,10 @@ void executar_testes() {
     printf("Cenario              Insercao/operacao   Busca/operacao\n");
 
     for (i = 0; i < 3; i++) {
-        printf("%-20s %16.2f %15.2f\n",descricao[i],(double)comparacoes_insercao[i] / QUANTIDADE,(double)comparacoes_busca[i] / QUANTIDADE_BUSCAS);
+        printf("%-20s %16.2f %15.2f\n",
+               descricao[i],
+               (double)comparacoes_insercao[i] / QUANTIDADE,
+               (double)comparacoes_busca[i] / QUANTIDADE_BUSCAS);
     }
 
     printf("\nCONCLUSAO\n");
