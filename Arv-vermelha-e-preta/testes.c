@@ -212,11 +212,15 @@ int *chamadas_total, int *comparacoes_total,int *rotacoes_esquerda, int *rotacoe
 int *chamadas_eh_vermelho_total, int *chamadas_inverter_cores_total,
 int *altura, int *altura_preta, int *validacao){
     ArvVermelhaPreta *arvores_tempo[REPETICOES_INSERCAO_TEMPO];
+    ArvVermelhaPreta *arvore_tempo_individual;
     Artista artistas[QUANTIDADE];
     double inicio, fim;
+    double tempos_individuais[QUANTIDADE];
     int repeticao, i, passos, chamadas, resultado;
     int rotacao_esquerda_antes, rotacao_direita_antes;
     int eh_vermelho_antes, inverter_cores_antes;
+    int rotacoes_esquerda_artista, rotacoes_direita_artista;
+    int chamadas_eh_vermelho_artista, chamadas_inverter_cores_artista;
 
     for (i = 0; i < QUANTIDADE; i++)
         preparar_artista(&artistas[i], nomes[i]);
@@ -242,6 +246,32 @@ int *altura, int *altura_preta, int *validacao){
     for (repeticao = 0; repeticao < REPETICOES_INSERCAO_TEMPO; repeticao++)
         liberar_arvore(arvores_tempo[repeticao]);
 
+    /* Mede cada posicao de insercao em varios testes do mesmo cenario. */
+    for (i = 0; i < QUANTIDADE; i++)
+        tempos_individuais[i] = 0;
+
+    contabilizarRotacoes = 0;
+    for (repeticao = 0; repeticao < REPETICOES_INSERCAO_TEMPO; repeticao++) {
+        arvore_tempo_individual = NULL;
+        for (i = 0; i < QUANTIDADE; i++) {
+            inicio = obter_tempo();
+            resultado = cadastrarArtista(&arvore_tempo_individual, &artistas[i]);
+            fim = obter_tempo();
+
+            if (resultado == 0) {
+                printf("ERRO: falha ao medir a insercao individual de %s.\n",
+                       artistas[i].nome);
+                exit(1);
+            }
+
+            tempos_individuais[i] = tempos_individuais[i] + (fim - inicio);
+        }
+        liberar_arvore(arvore_tempo_individual);
+    }
+
+    for (i = 0; i < QUANTIDADE; i++)
+        tempos_individuais[i] = tempos_individuais[i] / REPETICOES_INSERCAO_TEMPO;
+
     *raiz = NULL;
     *chamadas_total = 0;
     *comparacoes_total = 0;
@@ -255,6 +285,8 @@ int *altura, int *altura_preta, int *validacao){
     chamadasInverterCores = 0;
     contabilizarRotacoes = 1;
 
+    printf("  Medicao individual: media de %d repeticoes por artista.\n",
+           REPETICOES_INSERCAO_TEMPO);
     for (i = 0; i < QUANTIDADE; i++) {
         passos = contar_passos(*raiz, artistas[i].nome);
         chamadas = passos + 1;
@@ -271,19 +303,30 @@ int *altura, int *altura_preta, int *validacao){
 
         *chamadas_total = *chamadas_total + chamadas;
         *comparacoes_total = *comparacoes_total + passos;
-        *rotacoes_esquerda = *rotacoes_esquerda + chamadasRotacaoEsquerda - rotacao_esquerda_antes;
-        *rotacoes_direita = *rotacoes_direita + chamadasRotacaoDireita - rotacao_direita_antes;
-        *chamadas_eh_vermelho_total = *chamadas_eh_vermelho_total + chamadasEhVermelho - eh_vermelho_antes;
-        *chamadas_inverter_cores_total = *chamadas_inverter_cores_total + chamadasInverterCores - inverter_cores_antes;
+        rotacoes_esquerda_artista = chamadasRotacaoEsquerda - rotacao_esquerda_antes;
+        rotacoes_direita_artista = chamadasRotacaoDireita - rotacao_direita_antes;
+        chamadas_eh_vermelho_artista = chamadasEhVermelho - eh_vermelho_antes;
+        chamadas_inverter_cores_artista = chamadasInverterCores - inverter_cores_antes;
+        *rotacoes_esquerda = *rotacoes_esquerda + rotacoes_esquerda_artista;
+        *rotacoes_direita = *rotacoes_direita + rotacoes_direita_artista;
+        *chamadas_eh_vermelho_total = *chamadas_eh_vermelho_total + chamadas_eh_vermelho_artista;
+        *chamadas_inverter_cores_total = *chamadas_inverter_cores_total + chamadas_inverter_cores_artista;
+
+        printf("  %s | tempo medio (%d repeticoes): %.9f s | passos: %d"
+               " | cadastrarArtista: 1 | inserir: 1 | inserirArvVP: %d"
+               " | criarNO: 1 | buscarArvVP: 0 | strcmp: %d"
+               " | rotacoes E/D: %d/%d | ehVermelho: %d | inverterCores: %d\n",
+               artistas[i].nome, REPETICOES_INSERCAO_TEMPO,
+               tempos_individuais[i], passos, chamadas, passos,
+               rotacoes_esquerda_artista, rotacoes_direita_artista,
+               chamadas_eh_vermelho_artista, chamadas_inverter_cores_artista);
 
         if (arquivo != NULL) {
             fprintf(arquivo,
-                    "RUBRO_NEGRA;%s;INSERCAO;%s;%.9f;;1;1;%d;1;0;%d;%d;%d;;;;%d;%d\n",
-                    descricao, artistas[i].nome, *tempo_medio, chamadas, passos,
-                    chamadasRotacaoEsquerda - rotacao_esquerda_antes,
-                    chamadasRotacaoDireita - rotacao_direita_antes,
-                    chamadasEhVermelho - eh_vermelho_antes,
-                    chamadasInverterCores - inverter_cores_antes);
+                    "VERMELHA_PRETA;%s;INSERCAO;%s;%.9f;;1;1;%d;1;0;%d;%d;%d;;;;%d;%d\n",
+                    descricao, artistas[i].nome, tempos_individuais[i], chamadas, passos,
+                    rotacoes_esquerda_artista, rotacoes_direita_artista,
+                    chamadas_eh_vermelho_artista, chamadas_inverter_cores_artista);
         }
     }
 
@@ -293,7 +336,7 @@ int *altura, int *altura_preta, int *validacao){
 
     if (arquivo != NULL) {
         fprintf(arquivo,
-                "RUBRO_NEGRA;%s;RESUMO_INSERCAO;100 artistas;;%.9f;100;100;%d;100;0;%d;%d;%d;%d;%d;%d;%d;%d\n",
+                "VERMELHA_PRETA;%s;RESUMO_INSERCAO;100 artistas;;%.9f;100;100;%d;100;0;%d;%d;%d;%d;%d;%d;%d;%d\n",
                 descricao, *tempo_lote, *chamadas_total,
                 *comparacoes_total, *rotacoes_esquerda, *rotacoes_direita,
                 *altura, *altura_preta, *validacao,
@@ -337,7 +380,7 @@ void testar_duplicata(char descricao[], char nome[],
 
     if (arquivo != NULL) {
         fprintf(arquivo,
-                "RUBRO_NEGRA;%s;TESTE_DUPLICATA;%s;;;1;1;%d;0;0;%d;%d;%d;%d;%d;%d;%d;%d\n",
+                "VERMELHA_PRETA;%s;TESTE_DUPLICATA;%s;;;1;1;%d;0;0;%d;%d;%d;%d;%d;%d;%d;%d\n",
                 descricao, nome, passos, passos, rotacoes_esquerda,
                 rotacoes_direita, calcular_altura(*raiz), altura_preta,
                 validacao, chamadas_eh_vermelho, chamadas_inverter_cores);
@@ -376,7 +419,7 @@ void testar_buscas(char descricao[], ArvVermelhaPreta *raiz,char consultas[QUANT
 
             if (arquivo != NULL) {
                 fprintf(arquivo,
-                        "RUBRO_NEGRA;%s;BUSCA_10;%s;%.9f;;0;0;0;0;%d;%d;0;0;%d;%d;%d;0;0\n",
+                        "VERMELHA_PRETA;%s;BUSCA_10;%s;%.9f;;0;0;0;0;%d;%d;0;0;%d;%d;%d;0;0\n",
                         descricao, consultas[i], duracao, passos, passos,
                         calcular_altura(raiz), altura_preta, validacao);
             }
@@ -385,7 +428,7 @@ void testar_buscas(char descricao[], ArvVermelhaPreta *raiz,char consultas[QUANT
 
     if (arquivo != NULL) {
         fprintf(arquivo,
-                "RUBRO_NEGRA;%s;RESUMO_BUSCA_10;10 artistas;%.9f;%.9f;0;0;0;0;%d;%d;0;0;%d;%d;%d;0;0\n",
+                "VERMELHA_PRETA;%s;RESUMO_BUSCA_10;10 artistas;%.9f;%.9f;0;0;0;0;%d;%d;0;0;%d;%d;%d;0;0\n",
                 descricao, *tempo_total / QUANTIDADE_BUSCAS, *tempo_total,
                 *chamadas_total, *comparacoes_total, calcular_altura(raiz),
                 altura_preta, validacao);
@@ -424,7 +467,7 @@ void testar_busca_ausente(char descricao[], ArvVermelhaPreta *raiz,FILE *arquivo
 
         if (arquivo != NULL) {
             fprintf(arquivo,
-                    "RUBRO_NEGRA;%s;BUSCA_AUSENTE;%s;%.9f;;0;0;0;0;%d;%d;0;0;%d;%d;%d;0;0\n",
+                    "VERMELHA_PRETA;%s;BUSCA_AUSENTE;%s;%.9f;;0;0;0;0;%d;%d;0;0;%d;%d;%d;0;0\n",
                     descricao, nomes[i], duracao, chamadas, passos,
                     calcular_altura(raiz), altura_preta, validacao);
         }
@@ -432,15 +475,15 @@ void testar_busca_ausente(char descricao[], ArvVermelhaPreta *raiz,FILE *arquivo
 
     if (arquivo != NULL) {
         fprintf(arquivo,
-                "RUBRO_NEGRA;%s;RESUMO_BUSCA_AUSENTE;2 nomes;%.9f;%.9f;0;0;0;0;%d;%d;0;0;%d;%d;%d;0;0\n",
+                "VERMELHA_PRETA;%s;RESUMO_BUSCA_AUSENTE;2 nomes;%.9f;%.9f;0;0;0;0;%d;%d;0;0;%d;%d;%d;0;0\n",
                 descricao, tempo_total / 2, tempo_total, chamadas_total,
                 comparacoes_total, calcular_altura(raiz), altura_preta,
                 validacao);
     }
 }
 
-//Executa os tres cenarios de desempenho da arvore rubro-negra
-void executar_testes(void) {
+//Executa os tres cenarios de desempenho da arvore vermelha e preta
+void executar_testes() {
     char nomes[QUANTIDADE][TAMANHO_NOME];
     char ordens[3][QUANTIDADE][TAMANHO_NOME];
     char descricao[3][30] = {
@@ -507,6 +550,9 @@ void executar_testes(void) {
     printf("- Altura preta inclui as folhas NIL e valida os caminhos da arvore.\n");
     printf("- Tempo de insercao exclui a preparacao dos dados.\n");
     printf("- O tempo e a media de %d lotes com 100 insercoes.\n",REPETICOES_INSERCAO_TEMPO);
+    printf("- Cada artista tambem tem tempo individual, medio de %d repeticoes.\n",
+           REPETICOES_INSERCAO_TEMPO);
+    printf("- Passos, chamadas, comparacoes e balanceamento sao mostrados por artista.\n");
     printf("- Cada busca e repetida %d vezes para medir o tempo.\n",REPETICOES_BUSCA_TEMPO);
     printf("- Rotacoes sao contadas nas funcoes originais de rotacao.\n");
     printf("- Tambem sao contadas chamadas de ehVermelho e inverterCores.\n");
@@ -593,4 +639,5 @@ void explicar_testes() {
     printf("7. As rotacoes esquerda e direita sao contadas em funcoes.c.\n");
     printf("8. Tambem sao contadas chamadas de ehVermelho e inverterCores.\n");
     printf("9. Os resultados detalhados ficam em resultados_arvvp.csv.\n");
+    printf("10. O tempo individual de cada artista e a media de 100 repeticoes.\n");
 }

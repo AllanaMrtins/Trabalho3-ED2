@@ -40,7 +40,7 @@ typedef struct {
 } Metricas;
 
 //Retorna o tempo atual em segundos
-double obter_tempo(){
+double obter_tempo(void) {
     double tempo = 0;
 #ifdef _WIN32
     LARGE_INTEGER contador;
@@ -56,7 +56,7 @@ double obter_tempo(){
 }
 
 //Zera todos os contadores das funcoes AVL
-void zerar_metricas(){
+void zerar_metricas(void) {
     chamadasAlturaAVL = 0;
     chamadasMaiorAVL = 0;
     chamadasAtualizarAlturaAVL = 0;
@@ -130,7 +130,7 @@ void gerar_nomes(char nomes[QUANTIDADE][TAMANHO_NOME]) {
     }
 }
 
-//Ordena os nomes em ordem crescente
+
 void ordenar_crescente(char nomes[QUANTIDADE][TAMANHO_NOME]) {
     int i, j;
     char auxiliar[TAMANHO_NOME];
@@ -170,7 +170,7 @@ void embaralhar_nomes(char nomes[QUANTIDADE][TAMANHO_NOME]) {
     }
 }
 
-//Conta nos visitados para localizar uma chave
+
 int contar_passos(ArvAVL *raiz, char chave[]) {
     int passos = 0;
     int comparacao;
@@ -187,7 +187,6 @@ int contar_passos(ArvAVL *raiz, char chave[]) {
     return passos;
 }
 
-//Conta os nos da arvore
 int contar_nos(ArvAVL *raiz) {
     int quantidade = 0;
     if (raiz != NULL)
@@ -209,7 +208,6 @@ int calcular_altura_real(ArvAVL *raiz) {
     return resultado;
 }
 
-//Confere alturas armazenadas e fator de balanceamento de cada no
 int validar_avl_no(ArvAVL *raiz, int *altura_calculada) {
     int valido = 1;
     int esquerda = 0, direita = 0;
@@ -236,7 +234,7 @@ int validar_avl_no(ArvAVL *raiz, int *altura_calculada) {
     return valido;
 }
 
-//Confere se a arvore toda respeita as regras AVL
+//confere se a arvore toda respeita as regras AVL
 int validar_avl(ArvAVL *raiz, int *altura_calculada) {
     int valido = 1;
     if (raiz == NULL) {
@@ -270,7 +268,7 @@ void mostrar_metricas(Metricas m) {
            m.rotacaoEsquerda + m.rotacaoDireita);
 }
 
-// Escreve as metricas no CSV, na mesma ordem do cabecalho
+//Escreve as metricas no CSV, na mesma ordem do cabecalho
 void escrever_metricas(FILE *arquivo, Metricas m) {
     fprintf(arquivo, "%d;%d;%d;%d;%d;%d;%d;%d;%d;%d;%d;%d",
             m.cadastrarArtista, m.inserir, m.inserirArvAVL, m.criarNO,
@@ -280,13 +278,16 @@ void escrever_metricas(FILE *arquivo, Metricas m) {
 }
 
 //Mede o tempo, conta chamadas e constroi uma arvore para um cenario
-void inserir_cenario(char nomes[QUANTIDADE][TAMANHO_NOME], char descricao[],ArvAVL **raiz, FILE *arquivo,double *tempo_lote, double *tempo_medio,
-Metricas *metricas_total, int *altura_final, int *validacao){
-
+void inserir_cenario(char nomes[QUANTIDADE][TAMANHO_NOME], char descricao[],
+                     ArvAVL **raiz, FILE *arquivo,
+                     double *tempo_lote, double *tempo_medio,
+                     Metricas *metricas_total, int *altura_final, int *validacao) {
     ArvAVL *arvores_tempo[REPETICOES_INSERCAO_TEMPO];
+    ArvAVL *arvore_tempo_individual;
     Artista artistas[QUANTIDADE];
     double inicio, fim;
-    int repeticao, i, resultado, altura_calculada;
+    double tempos_individuais[QUANTIDADE];
+    int repeticao, i, resultado, altura_calculada, passos;
     Metricas atual;
 
     for (i = 0; i < QUANTIDADE; i++)
@@ -310,6 +311,32 @@ Metricas *metricas_total, int *altura_final, int *validacao){
     for (repeticao = 0; repeticao < REPETICOES_INSERCAO_TEMPO; repeticao++)
         liberar_arvore(arvores_tempo[repeticao]);
 
+    /* Mede cada artista em 100 repeticoes do mesmo cenario. */
+    for (i = 0; i < QUANTIDADE; i++)
+        tempos_individuais[i] = 0;
+
+    contabilizarMetricasAVL = 0;
+    for (repeticao = 0; repeticao < REPETICOES_INSERCAO_TEMPO; repeticao++) {
+        arvore_tempo_individual = NULL;
+        for (i = 0; i < QUANTIDADE; i++) {
+            inicio = obter_tempo();
+            resultado = cadastrarArtista(&arvore_tempo_individual, &artistas[i]);
+            fim = obter_tempo();
+
+            if (resultado == 0) {
+                printf("ERRO: falha ao medir a insercao individual de %s.\n",
+                       artistas[i].nome);
+                exit(1);
+            }
+
+            tempos_individuais[i] = tempos_individuais[i] + (fim - inicio);
+        }
+        liberar_arvore(arvore_tempo_individual);
+    }
+
+    for (i = 0; i < QUANTIDADE; i++)
+        tempos_individuais[i] = tempos_individuais[i] / REPETICOES_INSERCAO_TEMPO;
+
     *raiz = NULL;
     zerar_metricas();
     metricas_total->cadastrarArtista = 0;
@@ -326,7 +353,17 @@ Metricas *metricas_total, int *altura_final, int *validacao){
     metricas_total->rotacaoDireita = 0;
 
     printf("\nCENARIO: %s\n", descricao);
+    printf("Tabela: tempo individual medio de %d repeticoes por artista.\n",
+           REPETICOES_INSERCAO_TEMPO);
+    printf("Chamadas fixas por artista: cadastrarArtista=1, inserir=1, criarNO=1, buscarArvAVL=0.\n");
+    printf("Passos contam os nos visitados; inserirArvAVL inclui a chamada final ao NULL.\n");
+    printf("As colunas alt(), maior(), atualiza() e fator() mostram chamadas dessas funcoes.\n");
+    printf("  %-14s | %14s | %6s | %13s | %6s | %5s | %5s | %7s | %5s | %9s | %8s\n",
+           "Artista", "Tempo (s)", "Passos", "inserirArvAVL", "strcmp",
+           "Rot E", "Rot D", "alt()", "maior()", "atualiza", "fator()");
+    printf("  ---------------+----------------+--------+---------------+--------+-------+-------+---------+-------+-----------+----------\n");
     for (i = 0; i < QUANTIDADE; i++) {
+        passos = contar_passos(*raiz, artistas[i].nome);
         zerar_metricas();
         contabilizarMetricasAVL = 1;
         resultado = cadastrarArtista(raiz, &artistas[i]);
@@ -339,13 +376,21 @@ Metricas *metricas_total, int *altura_final, int *validacao){
             exit(1);
         }
 
+        printf("  %-14s | %14.9f | %6d | %13d | %6d | %5d | %5d | %7d | %5d | %9d | %8d\n",
+               artistas[i].nome, tempos_individuais[i], passos,
+               atual.inserirArvAVL, atual.comparacoes,
+               atual.rotacaoEsquerda, atual.rotacaoDireita, atual.altura,
+               atual.maior, atual.atualizarAltura, atual.fatorBalanceamento);
+
         if (arquivo != NULL) {
             fprintf(arquivo, "AVL;%s;INSERCAO;%s;%.9f;;", descricao,
-                    artistas[i].nome, *tempo_medio);
+                    artistas[i].nome, tempos_individuais[i]);
             escrever_metricas(arquivo, atual);
             fprintf(arquivo, ";;\n");
         }
     }
+
+    printf("  ---------------+----------------+--------+---------------+--------+-------+-------+---------+-------+-----------+----------\n");
 
     *validacao = validar_avl(*raiz, &altura_calculada);
     *altura_final = altura(*raiz);
@@ -357,10 +402,8 @@ Metricas *metricas_total, int *altura_final, int *validacao){
     }
 }
 
-//Mede as buscas dos mesmos artistas nos tres cenarios
-void testar_buscas(char descricao[], ArvAVL *raiz,
-                   char consultas[QUANTIDADE_BUSCAS][TAMANHO_NOME],
-                   FILE *arquivo, double *tempo_total, Metricas *total) {
+//mede as buscas dos mesmos artistas nos tres cenarios
+void testar_buscas(char descricao[], ArvAVL *raiz,char consultas[QUANTIDADE_BUSCAS][TAMANHO_NOME],FILE *arquivo, double *tempo_total, Metricas *total) {
     int i, repeticao, altura_calculada, validacao;
     double inicio, fim, duracao;
     ArvAVL *encontrado;
@@ -445,7 +488,6 @@ void testar_duplicata(char descricao[], char nome[], ArvAVL **raiz,
     }
 }
 
-//Busca nomes que nao existem na arvore
 void testar_ausentes(char descricao[], ArvAVL *raiz, FILE *arquivo) {
     char nomes[2][TAMANHO_NOME] = {"NaoExiste99991", "NaoExiste99992"};
     int i, altura_calculada, validacao;
@@ -472,8 +514,7 @@ void testar_ausentes(char descricao[], ArvAVL *raiz, FILE *arquivo) {
     }
 }
 
-//Executa os cenarios de insercao, busca e validacao da AVL
-void executar_testes_avl(){
+void executar_testes_avl() {
     char nomes[QUANTIDADE][TAMANHO_NOME];
     char ordens[3][QUANTIDADE][TAMANHO_NOME];
     char descricao[3][30] = {"Ordem crescente", "Ordem decrescente", "Ordem aleatoria"};
@@ -514,19 +555,48 @@ void executar_testes_avl(){
     printf("As metricas contam funcoes de cadastro, busca e balanceamento.\n");
     printf("O tempo de insercao e a media de %d lotes de 100 artistas.\n",
            REPETICOES_INSERCAO_TEMPO);
+    printf("O tempo individual de cada artista tambem e a media de %d repeticoes.\n",
+           REPETICOES_INSERCAO_TEMPO);
+    printf("As tabelas mostram as metricas por artista; o CSV guarda os nomes completos das funcoes.\n");
     printf("Cada busca cronometrada e repetida %d vezes.\n", REPETICOES_BUSCA_TEMPO);
 
     printf("\nETAPA 1 DE 4: INSERCOES E BALANCEAMENTO\n");
     for (i = 0; i < 3; i++) {
-        inserir_cenario(ordens[i], descricao[i], &raizes[i], arquivo,&tempo_lote[i], &tempo_medio[i], &metricas_insercao[i],&alturas[i], &validacoes[i]);
-        printf("  Tempo medio do lote: %.9f s; por artista: %.9f s.\n",tempo_lote[i], tempo_medio[i]);
-        mostrar_metricas(metricas_insercao[i]);
+        inserir_cenario(ordens[i], descricao[i], &raizes[i], arquivo,
+                        &tempo_lote[i], &tempo_medio[i], &metricas_insercao[i],
+                        &alturas[i], &validacoes[i]);
+        printf("  Tempo medio do lote de 100 insercoes: %.9f s\n",
+               tempo_lote[i]);
+        printf("  Tempo medio estimado por artista: %.9f s\n",
+               tempo_medio[i]);
+        printf("  Chamadas fixas: cadastrarArtista %d; inserir %d; criarNO %d; buscarArvAVL %d.\n",
+               metricas_insercao[i].cadastrarArtista,
+               metricas_insercao[i].inserir,
+               metricas_insercao[i].criarNO,
+               metricas_insercao[i].buscarArvAVL);
+        printf("  Chamadas inserirArvAVL: %d; media %.2f por artista.\n",
+               metricas_insercao[i].inserirArvAVL,
+               (double)metricas_insercao[i].inserirArvAVL / QUANTIDADE);
+        printf("  Comparacoes strcmp: %d; media %.2f por artista.\n",
+               metricas_insercao[i].comparacoes,
+               (double)metricas_insercao[i].comparacoes / QUANTIDADE);
+        printf("  Chamadas de balanceamento: altura %d; maior %d; atualizarAltura %d; fatorBalanceamento %d.\n",
+               metricas_insercao[i].altura, metricas_insercao[i].maior,
+               metricas_insercao[i].atualizarAltura,
+               metricas_insercao[i].fatorBalanceamento);
+        printf("  Rotacoes: esquerda %d; direita %d; total %d.\n",
+               metricas_insercao[i].rotacaoEsquerda,
+               metricas_insercao[i].rotacaoDireita,
+               metricas_insercao[i].rotacaoEsquerda +
+               metricas_insercao[i].rotacaoDireita);
+        printf("  Altura final da AVL: %d.\n", alturas[i]);
+        /* A validacao e exibida logo abaixo, junto com o total de nos. */
         if (validacoes[i] == 1)
-            printf("  Altura AVL: %d; validacao: PASSOU.\n", alturas[i]);
+            printf("  Validacao AVL: PASSOU.\n");
         else
-            printf("  Altura AVL: %d; validacao: FALHOU.\n", alturas[i]);
+            printf("  Validacao AVL: FALHOU.\n");
         if (contar_nos(raizes[i]) == QUANTIDADE)
-            printf("  Os 100 artistas estao na arvore.\n");
+            printf("  Validacao: os 100 artistas estao na arvore.\n");
         else
             printf("  FALHA: a arvore nao contem os 100 artistas.\n");
     }
@@ -534,8 +604,11 @@ void executar_testes_avl(){
     printf("\nETAPA 2 DE 4: BUSCAS DOS MESMOS 10 ARTISTAS\n");
     for (i = 0; i < 3; i++) {
         printf("\nCENARIO: %s\n", descricao[i]);
-        testar_buscas(descricao[i], raizes[i], consultas, arquivo,&tempo_busca[i], &metricas_busca[i]);
-        printf("  Media das 10 buscas: %.9f s; chamadas buscarArvAVL: %d; strcmp: %d.\n",tempo_busca[i] / QUANTIDADE_BUSCAS,metricas_busca[i].buscarArvAVL, metricas_busca[i].comparacoes);
+        testar_buscas(descricao[i], raizes[i], consultas, arquivo,
+                      &tempo_busca[i], &metricas_busca[i]);
+        printf("  Media das 10 buscas: %.9f s; chamadas buscarArvAVL: %d; strcmp: %d.\n",
+               tempo_busca[i] / QUANTIDADE_BUSCAS,
+               metricas_busca[i].buscarArvAVL, metricas_busca[i].comparacoes);
     }
 
     printf("\nETAPA 3 DE 4: TESTES COMPLEMENTARES\n");
@@ -554,9 +627,11 @@ void executar_testes_avl(){
     for (i = 0; i < 3; i++) {
         altura_calculada = calcular_altura_real(raizes[i]);
         if (validacoes[i] == 1)
-            printf("%-20s altura armazenada: %d; altura calculada: %d; validacao: PASSOU.\n",descricao[i], alturas[i], altura_calculada);
+            printf("%-20s altura armazenada: %d; altura calculada: %d; validacao: PASSOU.\n",
+                   descricao[i], alturas[i], altura_calculada);
         else
-            printf("%-20s altura armazenada: %d; altura calculada: %d; validacao: FALHOU.\n", descricao[i], alturas[i], altura_calculada);
+            printf("%-20s altura armazenada: %d; altura calculada: %d; validacao: FALHOU.\n",
+                   descricao[i], alturas[i], altura_calculada);
     }
     printf("Compare principalmente comparacoes, chamadas auxiliares e rotacoes; os tempos variam por computador.\n");
     if (arquivo != NULL) {
@@ -567,12 +642,13 @@ void executar_testes_avl(){
         liberar_arvore(raizes[j]);
 }
 
-//Explica as medidas que a bateria apresenta
-void explicar_testes_avl(void) {
+//explica as medidas que a bateria apresenta
+void explicar_testes_avl() {
     printf("\n===== COMO FUNCIONAM OS TESTES AVL =====\n");
     printf("1. Sao criados 100 nomes de artistas sem repeticao.\n");
     printf("2. Os mesmos nomes entram em ordem crescente, decrescente e aleatoria.\n");
     printf("3. O tempo e medido em lotes repetidos, sem preparar dados no cronometro.\n");
+    printf("   Tambem e medido o tempo individual de cada insercao, pela media de 100 repeticoes.\n");
     printf("4. Contamos chamadas de cadastro, insercao, busca e funcoes de balanceamento.\n");
     printf("5. As rotacoes para a esquerda e para a direita sao contadas separadamente.\n");
     printf("6. A validacao confere alturas armazenadas e fator de balanceamento de cada no.\n");
