@@ -285,8 +285,13 @@ int *altura, int *altura_preta, int *validacao){
     chamadasInverterCores = 0;
     contabilizarRotacoes = 1;
 
-    printf("  Medicao individual: media de %d repeticoes por artista.\n",
+    printf("  Tabela: tempo medio individual de %d repeticoes por artista.\n",
            REPETICOES_INSERCAO_TEMPO);
+    printf("  Chamadas fixas por artista: cadastrarArtista=1, inserir=1, criarNO=1, buscarArvVP=0.\n");
+    printf("  %-14s | %14s | %6s | %12s | %6s | %5s | %5s | %10s | %13s\n",
+           "Artista", "Tempo (s)", "Passos", "inserirArvVP", "strcmp",
+           "Rot E", "Rot D", "ehVermelho", "inverterCores");
+    printf("  ----------------+----------------+--------+--------------+--------+-------+-------+------------+---------------\n");
     for (i = 0; i < QUANTIDADE; i++) {
         passos = contar_passos(*raiz, artistas[i].nome);
         chamadas = passos + 1;
@@ -312,13 +317,9 @@ int *altura, int *altura_preta, int *validacao){
         *chamadas_eh_vermelho_total = *chamadas_eh_vermelho_total + chamadas_eh_vermelho_artista;
         *chamadas_inverter_cores_total = *chamadas_inverter_cores_total + chamadas_inverter_cores_artista;
 
-        printf("  %s | tempo medio (%d repeticoes): %.9f s | passos: %d"
-               " | cadastrarArtista: 1 | inserir: 1 | inserirArvVP: %d"
-               " | criarNO: 1 | buscarArvVP: 0 | strcmp: %d"
-               " | rotacoes E/D: %d/%d | ehVermelho: %d | inverterCores: %d\n",
-               artistas[i].nome, REPETICOES_INSERCAO_TEMPO,
-               tempos_individuais[i], passos, chamadas, passos,
-               rotacoes_esquerda_artista, rotacoes_direita_artista,
+        printf("  %-14s | %14.9f | %6d | %12d | %6d | %5d | %5d | %10d | %13d\n",
+               artistas[i].nome, tempos_individuais[i], passos, chamadas,
+               passos, rotacoes_esquerda_artista, rotacoes_direita_artista,
                chamadas_eh_vermelho_artista, chamadas_inverter_cores_artista);
 
         if (arquivo != NULL) {
@@ -329,6 +330,8 @@ int *altura, int *altura_preta, int *validacao){
                     chamadas_eh_vermelho_artista, chamadas_inverter_cores_artista);
         }
     }
+
+    printf("  ----------------+----------------+--------+--------------+--------+-------+-------+------------+---------------\n");
 
     contabilizarRotacoes = 0;
     *altura = calcular_altura(*raiz);
@@ -399,6 +402,10 @@ void testar_buscas(char descricao[], ArvVermelhaPreta *raiz,char consultas[QUANT
     *comparacoes_total = 0;
     validacao = validar_arvore(raiz, &altura_preta);
 
+    printf("  %-14s | %12s | %8s | %15s\n",
+           "Artista", "buscarArvVP", "strcmp", "Tempo medio (s)");
+    printf("  ---------------+--------------+----------+-----------------\n");
+
     for (i = 0; i < QUANTIDADE_BUSCAS; i++) {
         passos = contar_passos(raiz, consultas[i]);
         inicio = obter_tempo();
@@ -414,8 +421,8 @@ void testar_buscas(char descricao[], ArvVermelhaPreta *raiz,char consultas[QUANT
             *chamadas_total = *chamadas_total + passos;
             *comparacoes_total = *comparacoes_total + passos;
 
-            printf("  Artista %-12s | chamadas: %3d | media: %.9f s por busca\n",
-                   consultas[i], passos, duracao);
+            printf("  %-14s | %12d | %8d | %15.9f\n",
+                   consultas[i], passos, passos, duracao);
 
             if (arquivo != NULL) {
                 fprintf(arquivo,
@@ -425,6 +432,8 @@ void testar_buscas(char descricao[], ArvVermelhaPreta *raiz,char consultas[QUANT
             }
         }
     }
+
+    printf("  ---------------+--------------+----------+-----------------\n");
 
     if (arquivo != NULL) {
         fprintf(arquivo,
@@ -483,7 +492,7 @@ void testar_busca_ausente(char descricao[], ArvVermelhaPreta *raiz,FILE *arquivo
 }
 
 //Executa os tres cenarios de desempenho da arvore vermelha e preta
-void executar_testes() {
+void executar_testes(void) {
     char nomes[QUANTIDADE][TAMANHO_NOME];
     char ordens[3][QUANTIDADE][TAMANHO_NOME];
     char descricao[3][30] = {
@@ -552,7 +561,8 @@ void executar_testes() {
     printf("- O tempo e a media de %d lotes com 100 insercoes.\n",REPETICOES_INSERCAO_TEMPO);
     printf("- Cada artista tambem tem tempo individual, medio de %d repeticoes.\n",
            REPETICOES_INSERCAO_TEMPO);
-    printf("- Passos, chamadas, comparacoes e balanceamento sao mostrados por artista.\n");
+    printf("- A tabela mostra passos, strcmp, rotacoes e funcoes auxiliares por artista.\n");
+    printf("- As chamadas individuais restantes e as metricas completas ficam no CSV.\n");
     printf("- Cada busca e repetida %d vezes para medir o tempo.\n",REPETICOES_BUSCA_TEMPO);
     printf("- Rotacoes sao contadas nas funcoes originais de rotacao.\n");
     printf("- Tambem sao contadas chamadas de ehVermelho e inverterCores.\n");
@@ -565,6 +575,7 @@ void executar_testes() {
 
         printf("  Tempo medio do lote de 100 insercoes: %.9f s\n", tempo_lote[i]);
         printf("  Tempo medio estimado por artista: %.9f s\n", tempo_medio[i]);
+        printf("  Chamadas fixas: cadastrarArtista 100; inserir 100; criarNO 100; buscarArvVP 0.\n");
         printf("  Chamadas inserirArvVP: %d; media %.2f por artista.\n",chamadas_insercao[i],(double)chamadas_insercao[i] / QUANTIDADE);
         printf("  Comparacoes strcmp: %d; media %.2f por artista.\n",comparacoes_insercao[i],(double)comparacoes_insercao[i] / QUANTIDADE);
         printf("  Rotacoes: esquerda %d; direita %d; total %d.\n",rotacoes_esquerda[i], rotacoes_direita[i],rotacoes_esquerda[i] + rotacoes_direita[i]);
